@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --color-primario: #353F67;
+    --color-secundario: #22517F;
+    --color-acento: #2789C3;
+    --color-neutro-oscuro: #26261F;
+    --color-fondo: #F4F5F7;
+    --color-papel: #FFFFFF;
+    --color-texto-tenue: #5B6472;
+    --color-linea: #E0E3E9;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-neutro-oscuro);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Contenedor general: define el ancho total del login */
+.tabs {
+    width: 360px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Pestañas */
+.tabs input[type="radio"] {
+    display: none;
+}
+
+.tabs label {
+    flex: 1;
+    text-align: center;
+    padding: 16px 0;
+    cursor: pointer;
+    background-color: var(--color-linea);
+    color: var(--color-texto-tenue);
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    transition: all 0.15s ease;
+}
+
+.tabs label:first-of-type {
+    border-radius: 10px 0 0 0;
+}
+
+.tabs label:last-of-type {
+    border-radius: 0 10px 0 0;
+}
+
+.tabs input[type="radio"]:checked + label {
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+}
+
+#tab_estudiante:checked ~ .panel {
+    border-radius: 0 14px 14px 14px;
+}
+
+#tab_responsable:checked ~ .panel {
+    border-radius: 14px 0 14px 14px;
+}
+
+.panel {
+    background-color: var(--color-papel);
+    border: 1px solid var(--color-linea);
+    padding: 44px 36px 28px;
+    border-radius: 0 14px 14px 14px;
+    box-shadow: 0 24px 48px -24px rgba(53, 63, 103, 0.28);
+    flex-basis: 100%;
+}
+
+.panel form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+    width: 100%;
+}
+
+.panel label {
+    background-color: transparent;
+    color: var(--color-primario);
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+    margin-bottom: -24px;
+}
+
+.panel input[type="email"] + label {
+    margin-top: -12px;
+}
+
+.panel input[type="email"],
+.panel input[type="password"] {
+    padding: 14px 16px;
+    border: 1px solid var(--color-linea);
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--color-neutro-oscuro);
+    width: 100%;
+}
+
+.panel button {
+    display: block;
+    align-self: center;
+    margin: 10px auto 0;
+    padding: 14px 40px;
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.panel button:hover {
+    background-color: var(--color-secundario);
+}
