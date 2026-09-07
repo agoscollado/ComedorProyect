@@ -23,16 +23,16 @@ class Auth extends BaseController
         $usuario = $model->where('email', $email)->first();
 
         if(is_null($usuario)) {
-            return redirect()->back()->with('error', 'Usuario no encontrado');
+            return redirect()->back()->with('error', 'Email, contraseña o rol incorrectos');
         }
 
         if(!password_verify($password, $usuario['password'])) {
-            return redirect()->back()->with('error', 'Contraseña incorrecta');
+            return redirect()->back()->with('error', 'Email, contraseña o rol incorrectos');
         }
 
         if ($usuario['rol'] !== $rol) {
-            return redirect()->back()->with('error', 'El rol seleccionado no corresponde a este usuario');
-        }
+                return redirect()->back()->with('error', 'Email, contraseña o rol incorrectos');
+            }
         //iniciar sesión
         session()->set([
             'usuario_id' => $usuario['id'],
@@ -41,10 +41,10 @@ class Auth extends BaseController
             ]);
 
         if($usuario['rol'] === 'estudiante') {
-            return redirect()->to('/panelEstudiante');
-        } 
-            return redirect()->to('/panelResponsable');
-        
+            return redirect()->to('/panel-estudiante');
+        } else {
+            return redirect()->to('/panel-responsable');
+        }
     }
 
     public function logout()

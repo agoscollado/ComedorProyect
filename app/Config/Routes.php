@@ -7,5 +7,5 @@ $routes->get('/', 'Home::index');
 $routes->get('/login', 'Auth::mostrarFormLogin');
 $routes->post('/login', 'Auth::procesarLogin');
 $routes->get('/logout', 'Auth::logout');
-$routes->get('/panel-estudiante', 'PanelEstudiante::index');
-$routes->get('/panel-responsable', 'PanelResponsable::index');
+$routes->get('/panel-estudiante', 'PanelEstudiante::index', ['filter' => 'auth:estudiante']);
+$routes->get('/panel-responsable', 'PanelResponsable::index', ['filter' => 'auth:responsable']);

@@ -7,6 +7,12 @@
     <title>Login</title>
 </head>
 <body>
+    <!--- Mostrar mensaje de error si existe -->
+    <?php $error = session()->getFlashdata('error'); ?>
+        <?php if ($error): ?>
+            <p><?= $error ?></p>
+        <?php endif; ?>
+
     <form class="tabs" action="<?= base_url('login') ?>" method="post">
         <input type="radio" id="tab_estudiante" name="rol" value="estudiante" checked>
         <label for="tab_estudiante">Estudiante</label>
