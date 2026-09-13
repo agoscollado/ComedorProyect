@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* ==========================================================================
+    Variables globales de color y tipografía
+   ========================================================================== */
+
 :root {
     --color-primario: #353F67;
     --color-secundario: #22517F;
@@ -11,7 +15,11 @@
     --color-linea: #E0E3E9;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
     font-family: 'Inter', sans-serif;
@@ -23,14 +31,19 @@ body {
     min-height: 100vh;
 }
 
-/* Contenedor general: define el ancho total del login */
+
+/* ==========================================================================
+    Login: pestañas Estudiante / Responsable
+   ========================================================================== */
+
+/* Contenedor general */
 .tabs {
     width: 360px;
     display: flex;
     flex-wrap: wrap;
 }
 
-/* Pestañas */
+/* Los radios quedan ocultos; se controlan haciendo click en su label */
 .tabs input[type="radio"] {
     display: none;
 }
@@ -49,6 +62,8 @@ body {
     transition: all 0.15s ease;
 }
 
+/* Solo se redondean las esquinas exteriores, para que las dos pestañas
+   se vean como una sola pieza continua */
 .tabs label:first-of-type {
     border-radius: 10px 0 0 0;
 }
@@ -62,6 +77,8 @@ body {
     color: var(--color-fondo);
 }
 
+/* La esquina de la tarjeta que "toca" la pestaña activa queda recta,
+   para dar la sensación de que pestaña y tarjeta son una sola pieza */
 #tab_estudiante:checked ~ .panel {
     border-radius: 0 14px 14px 14px;
 }
@@ -79,6 +96,8 @@ body {
     flex-basis: 100%;
 }
 
+/* El verdadero contenedor flex de los campos es el <form> de adentro,
+   no el .panel (que solo tiene un hijo: el form) */
 .panel form {
     display: flex;
     flex-direction: column;
@@ -97,6 +116,7 @@ body {
     text-align: left;
     margin-bottom: -24px;
 }
+
 
 .panel input[type="email"] + label {
     margin-top: -12px;
@@ -132,4 +152,84 @@ body {
 
 .panel button:hover {
     background-color: var(--color-secundario);
+}
+
+
+/* ==========================================================================
+    Formulario de carga de documentación (Solicitud)
+   ========================================================================== */
+
+.form-card {
+    max-width: 440px;
+    margin: 60px auto;
+    background-color: var(--color-papel);
+    border: 1px solid var(--color-linea);
+    padding: 36px;
+    border-radius: 14px;
+    box-shadow: 0 24px 48px -24px rgba(53, 63, 103, 0.28);
+}
+
+.form-card h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    color: var(--color-primario);
+    margin-bottom: 24px;
+}
+
+.form-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-card label {
+    color: var(--color-primario);
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: -10px;
+}
+
+.form-card select,
+.form-card input[type="file"] {
+    padding: 10px 12px;
+    border: 1px solid var(--color-linea);
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--color-neutro-oscuro);
+}
+
+.form-card button {
+    padding: 12px 24px;
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.form-card button:hover {
+    background-color: var(--color-secundario);
+}
+
+.mensaje-error {
+    background-color: #FDECEA;
+    color: #B3261E;
+    border: 1px solid #F5C2C0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    margin-bottom: 20px;
+}
+
+.mensaje-error ul {
+    margin: 0;
+    padding-left: 18px;
 }
