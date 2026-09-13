@@ -27,8 +27,8 @@ class Solicitud extends BaseController
             // uploaded[dni,certificado]: confirma que se subió un archivo en el campo "dni"
             // max_size[dni,2048]: tamaño máximo en KB (2048 KB = 2 MB)
             // ext_in[dni,...]: solo permite estas extensiones de archivo
-            'dni'  => 'uploaded[dni]|max_size[dni,2048]|ext_in[dni,pdf,jpg,jpeg,png]',
-            'certificado' => 'uploaded[certificado]|max_size[certificado,2048]|ext_in[certificado,pdf,jpg,jpeg,png]',
+            'dni'  => 'uploaded[dni]|max_size[dni,2048]|ext_in[dni,pdf,jpg,jpeg,png]|mime_in[dni,application/pdf,image/jpeg,image/png]' ,
+            'certificado' => 'uploaded[certificado]|max_size[certificado,2048]|ext_in[certificado,pdf,jpg,jpeg,png]|mime_in[certificado,application/pdf,image/jpeg,image/png]',
         ];
 
         // $this->validate() corre las reglas de arriba contra lo que llegó en el request.
