@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="<?= base_url('css/estilos.css') ?>?v=<?= time() ?>">
     <title>Panel del Estudiante</title>
 </head>
-<body>
+<body class="panel-page">
     <header>
     <div class="wrap header-inner">
         <div class="brand">

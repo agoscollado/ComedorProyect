@@ -43,7 +43,7 @@ class Auth extends BaseController
         if($usuario['rol'] === 'estudiante') {
             return redirect()->to('/panel-estudiante');
         } else {
-            return redirect()->to('/panel-responsable');
+            return redirect()->to('/gestionSolicitudes/listarPendientes');
         }
     }
 

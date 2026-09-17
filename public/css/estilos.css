@@ -21,7 +21,7 @@
     padding: 0;
 }
 
-body {
+body.panel-page{
     font-family: 'Inter', sans-serif;
     background-color: var(--color-fondo);
     color: var(--color-neutro-oscuro);
@@ -31,7 +31,9 @@ body {
     min-height: 100vh;
 }
 
-
+body.panel-page {
+    display: block;
+}
 /* ==========================================================================
     Login: pestañas Estudiante / Responsable
    ========================================================================== */
@@ -601,10 +603,20 @@ table.history-table {
     color: var(--color-texto-tenue);
     margin-bottom: 14px;
 }
+
+.card-link {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-primario);
+    text-decoration: none;
+}
+.card-link:hover { color: var(--color-acento); }
+
 .action-card .card-link {
     font-size: 13px;
     font-weight: 700;
     color: var(--color-primario);
+    text-decoration: none;
 }
 .action-card .card-link:hover { color: var(--color-acento); }
 .action-card.disabled { opacity: 0.55; }
