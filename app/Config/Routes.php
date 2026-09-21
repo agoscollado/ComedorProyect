@@ -4,7 +4,9 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 //Home
-$routes->get('/', 'Home::index');
+$routes->get('/', function () {
+    return redirect()->to('/login');
+});
 //Autenticacion
 $routes->get('/login', 'Auth::mostrarFormLogin');
 $routes->post('/login', 'Auth::procesarLogin');

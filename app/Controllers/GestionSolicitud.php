@@ -7,11 +7,6 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class GestionSolicitud extends BaseController
 {
-    public function index()
-    {
-        //
-    }
-
     public function listarPendientes()
     { //lista todas las solicitudes que están en estado "recibida" o "en revision"
         $solicitudModel = new \App\Models\SolicitudModel();
