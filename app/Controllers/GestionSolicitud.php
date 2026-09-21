@@ -74,7 +74,8 @@ class GestionSolicitud extends BaseController
     }
 
     public function aprobar($id)
-    { //aprueba la solicitud y cambia su estado a "aprobada"
+    { //aprueba la solicitud y cambia su estado a "aprobada", también activa al usuario correspondiente en la tabla de usuarios
+        $usuarioModel = new \App\Models\UsuarioModel();
         $solicitudModel = new \App\Models\SolicitudModel();
         $solicitud = $solicitudModel->find($id);
 
@@ -83,6 +84,7 @@ class GestionSolicitud extends BaseController
         }
 
         $solicitudModel->update($id, ['estado' => 'aprobada']);
+        $usuarioModel->update($solicitud['usuario_id'], ['activo' => 1]);
         return redirect()->to('/gestionSolicitudes/listarPendientes')->with('exito', 'Solicitud aprobada exitosamente.');
     }
 

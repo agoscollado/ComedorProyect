@@ -6,13 +6,24 @@
     <link rel="stylesheet" href="<?= base_url('css/estilos.css') ?>?v=<?= time() ?>">
     <title>Login</title>
 </head>
-<body>
+<body class="panel-page">
+    <header>
+        <div class="wrap header-inner">
+            <div class="brand">
+                <div class="brand-mark"></div>
+                <div class="brand-text">Comedor Universitario
+                    <span>Gestión de trámites en línea</span>
+                </div>
+            </div>
+        </div>
+    </header>
     <!--- Mostrar mensaje de error si existe -->
     <?php $error = session()->getFlashdata('error'); ?>
         <?php if ($error): ?>
             <p><?= $error ?></p>
         <?php endif; ?>
 
+    <main class="auth-main">
     <form class="tabs" action="<?= base_url('login') ?>" method="post">
         <input type="radio" id="tab_estudiante" name="rol" value="estudiante" checked>
         <label for="tab_estudiante">Estudiante</label>
@@ -29,7 +40,14 @@
                     <button type="submit">Iniciar Sesión</button>
                 
             </div>
-</form>
+    </form>
+    </main>
+    
+    <footer>
+            <div class="wrap footer-inner">
+                Comedor Universitario · Secretaría de Bienestar Estudiantil
+            </div>
+        </footer>
 </body>
 </html>
 

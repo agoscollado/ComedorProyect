@@ -20,6 +20,7 @@
             </div>
             <nav>
                 <a class="nav-link" href="<?= base_url('gestionSolicitudes/listarPendientes') ?>">Solicitudes pendientes</a>
+                <a class="nav-link" href="<?= base_url('gestionBeneficiarios/listarUsuarios') ?>">Bajas beneficiarios</a>
                 <div class="user-chip">
                     <div class="user-avatar"><?= esc(strtoupper(substr(session()->get('nombre'), 0, 1))) ?></div>
                     <div>
@@ -77,6 +78,7 @@
                                 <td><?= esc(date('d M Y', strtotime($solicitud['fecha_creacion']))) ?></td>
                                 <td><span class="badge <?= esc($solicitud['badge']['clase']) ?>"><?= esc($solicitud['badge']['texto']) ?></span></td>
                                 <td><a class="boton-link" href="<?= base_url('gestionSolicitudes/verDetalle/' . $solicitud['id']) ?>">Revisar</a></td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>

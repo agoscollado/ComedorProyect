@@ -21,7 +21,7 @@
     padding: 0;
 }
 
-body.panel-page{
+body{
     font-family: 'Inter', sans-serif;
     background-color: var(--color-fondo);
     color: var(--color-neutro-oscuro);
@@ -41,6 +41,7 @@ body.panel-page {
 /* Contenedor general */
 .tabs {
     width: 360px;
+    margin: 60px auto;
     display: flex;
     flex-wrap: wrap;
 }
@@ -156,7 +157,12 @@ body.panel-page {
     background-color: var(--color-secundario);
 }
 
-
+.auth-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh; 
+}
 /* ==========================================================================
     Formulario de carga de documentación (Solicitud)
    ========================================================================== */
@@ -282,14 +288,10 @@ body.panel-page {
 }
 
 /* ==========================================================================
-   Panel del Estudiante (dashboard)
+    Panel del Estudiante (dashboard)
    ========================================================================== */
 
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
-
-body {
-    display: block; /* Sobreescribe el flex centrado que usa el login */
-}
 
 /* Header del panel */
 header {
