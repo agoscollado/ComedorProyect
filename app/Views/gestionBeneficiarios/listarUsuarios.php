@@ -20,7 +20,7 @@
             </div>
             <nav>
                 <a class="nav-link" href="<?= base_url('gestionSolicitudes/listarPendientes') ?>">Solicitudes pendientes</a>
-                <a class="nav-link" href="<?= base_url('gestionBeneficiarios/listarUsuarios') ?>">Bajas beneficiarios</a>
+                <a class="nav-link" href="<?= base_url('gestionBeneficiarios/listarUsuarios') ?>">Gestión de beneficiarios</a>
                 <div class="user-chip">
                     <div class="user-avatar"><?= esc(strtoupper(substr(session()->get('nombre'), 0, 1))) ?></div>
                     <div>
@@ -37,7 +37,7 @@
             <section class="welcome">
                 <div class="eyebrow">Panel del Responsable</div>
                 <h1>Beneficiarios activos</h1>
-                <p>Estudiantes actualmente habilitados para retirar vianda. Podés dar de baja a quien corresponda.</p>
+                <p>Estudiantes actualmente habilitados para retirar vianda. </p>
 
                 <?php if (session()->getFlashdata('exito')): ?>
                     <div class="confirm-banner">
@@ -63,7 +63,8 @@
                             <th>Email</th>
                         <th>DNI</th>
                         <th>Carrera</th>
-                        <th>Acción</th>
+                        <th>Acreditar saldo</th>
+                        <th>Dar de baja</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,6 +74,12 @@
                             <td><?= esc($usuario['email']) ?></td>
                             <td><?= esc($usuario['dni']) ?></td>
                             <td><?= esc($usuario['carrera']) ?></td>
+                            <td>
+                                <form class="form-inline" action="<?= base_url('gestionChequera/registrarAcreditacion/' . $usuario['id']) ?>" method="post">
+                                    <input type="number" name="monto" step="0.01" min="0.01" placeholder="Monto" required>
+                                    <button type="submit" class="btn-acreditar">Acreditar</button>
+                                </form>
+                            </td>
                             <td>
                                 <form action="<?= base_url('gestionBeneficiarios/darDeBaja/' . $usuario['id']) ?>" method="post">
                                     <button type="submit" class="btn-baja">Dar de baja</button>

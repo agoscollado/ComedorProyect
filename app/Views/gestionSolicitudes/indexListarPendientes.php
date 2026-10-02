@@ -77,7 +77,7 @@
                                 <td><?= esc(ucfirst($solicitud['tipo'])) ?></td>
                                 <td><?= esc(date('d M Y', strtotime($solicitud['fecha_creacion']))) ?></td>
                                 <td><span class="badge <?= esc($solicitud['badge']['clase']) ?>"><?= esc($solicitud['badge']['texto']) ?></span></td>
-                                <td><a class="boton-link" href="<?= base_url('gestionSolicitudes/verDetalle/' . $solicitud['id']) ?>">Revisar</a></td>
+                                <td><a class="btn-link" href="<?= base_url('gestionSolicitudes/verDetalle/' . $solicitud['id']) ?>">Revisar</a></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

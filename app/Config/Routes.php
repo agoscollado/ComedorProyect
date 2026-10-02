@@ -29,3 +29,7 @@ $routes->group('gestionBeneficiarios', ['filter' => 'auth:responsable'], functio
     $routes->get('listarUsuarios', 'GestionBeneficiarios::listarUsuarios');
     $routes->post('darDeBaja/(:num)', 'GestionBeneficiarios::darDeBaja/$1');
 });
+//Gestión de Chequeras (Responsable)
+$routes->group('gestionChequera', ['filter' => 'auth:responsable'], function($routes) {
+    $routes->post('registrarAcreditacion/(:num)', 'GestionChequera::registrarAcreditacion/$1');
+});
