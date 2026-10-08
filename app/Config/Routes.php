@@ -13,6 +13,7 @@ $routes->post('/login', 'Auth::procesarLogin');
 $routes->get('/logout', 'Auth::logout');
 //Panel Estudiante
 $routes->get('/panel-estudiante', 'PanelEstudiante::index', ['filter' => 'auth:estudiante']);
+$routes->get('/tramites', 'TramitesPersonales::index', ['filter' => 'auth:estudiante']);
 //Solicitudes (Estudiante)
 $routes->get('/solicitud/nueva', 'Solicitud::mostrarFormulario', ['filter' => 'auth:estudiante']);
 $routes->post('/solicitud/crear', 'Solicitud::crear', ['filter' => 'auth:estudiante']);

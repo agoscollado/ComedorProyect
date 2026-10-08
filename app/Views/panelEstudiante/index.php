@@ -20,7 +20,7 @@
             </div>
         </div>
         <nav>
-            <a class="nav-link" href="#">Mis trámites</a>
+            <a class="nav-link" href="<?= base_url('tramites') ?>">Mis trámites</a>
             <a class="nav-link" href="#">Chequera</a>
             <a class="nav-link" href="#">Reclamos</a>
             <div class="user-chip">
@@ -123,7 +123,7 @@
                                 <td>#<?= esc(str_pad($solicitud['id'], 4, '0', STR_PAD_LEFT)) ?></td>
                                 <td><?= esc(ucfirst($solicitud['tipo'])) ?></td>
                                 <td><?= esc(date('d M Y', strtotime($solicitud['fecha_creacion']))) ?></td>
-                                <td><span class="badge <?= esc($solicitud['progreso']['badgeClase']) ?>"><?= esc($solicitud['progreso']['badgeTexto']) ?></span></td>
+                                <td><span class="badge <?= esc($solicitud['badge']['clase']) ?>"><?= esc($solicitud['badge']['texto']) ?></span></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

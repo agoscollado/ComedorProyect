@@ -8,7 +8,12 @@ class RemoveSaldoAcreditadoFromChequeras extends Migration
 {
     public function up()
     {
-        $this->forge->dropColumn('chequeras', 'saldo_acreditado');
+         /** @var \CodeIgniter\Database\BaseConnection $db */
+        $db = $this->db;
+
+        if ($db->fieldExists('saldo_acreditado', 'chequeras')) { 
+            $this->forge->dropColumn('chequeras', 'saldo_acreditado');
+        }
     }
 
     public function down()

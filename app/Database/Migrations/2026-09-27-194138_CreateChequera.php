@@ -25,6 +25,11 @@ class CreateChequera extends Migration
                 'constraint' => ['activa', 'inactiva'],
                 'default'    => 'inactiva',
             ],
+            'saldo_acreditado' => [
+            'type'       => 'DECIMAL',
+            'constraint' => '10,2',
+            'default'    => 0.00,
+            ],
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('usuario_id', 'usuarios', 'id', 'RESTRICT', 'RESTRICT');

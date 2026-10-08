@@ -11,6 +11,7 @@ class GestionSolicitud extends BaseController
     { //lista todas las solicitudes que están en estado "recibida" o "en revision"
         $solicitudModel = new \App\Models\SolicitudModel();
         $usuarioModel = new \App\Models\UsuarioModel();
+        $solicitudModel->pasarARevisionLasAntiguas(); //actualizamos los estados de las solicitudes que hayan vencido, para que se refleje en la vista del panel del estudiante.
 
         $solicitudesPendientes = $solicitudModel
             ->whereIn('estado', ['recibida', 'en revision'])
@@ -20,7 +21,7 @@ class GestionSolicitud extends BaseController
         foreach ($solicitudesPendientes as &$solicitud) {
             $estudiante = $usuarioModel->find($solicitud['usuario_id']);
             $solicitud['estudiante_nombre'] = $estudiante['nombre'] ?? 'Estudiante no encontrado';
-            $solicitud['badge'] = $this->estadoBadge($solicitud['estado']);
+            $solicitud['badge'] = $solicitudModel->estadoBadge($solicitud['estado']);
         }
 
         return view('gestionSolicitudes/indexListarPendientes', ['solicitudes' => $solicitudesPendientes]);
@@ -44,28 +45,28 @@ class GestionSolicitud extends BaseController
             'solicitud' => $solicitud,
             'estudiante' => $estudiante,
             'documentos' => $documentos,
-            'badge' => $this->estadoBadge($solicitud['estado']), // agrega la información del badge para mostrar el estado de la solicitud
+            'badge' => $solicitudModel->estadoBadge($solicitud['estado']), // agrega la información del badge para mostrar el estado de la solicitud
         ]);
     }
     public function verDocumento($id) {
         // muestra un documento específico de la solicitud en el navegador (inline) en vez de forzar la descarga, acceso restringido a Responsables vía filtro de ruta
         $documentoModel = new \App\Models\DocumentoModel();
 
-    $documento = $documentoModel->find($id);
-    if (!$documento) {
-        return redirect()->back()->with('error', 'Documento no encontrado.');
-    }
+        $documento = $documentoModel->find($id);
+        if (!$documento) {
+            return redirect()->back()->with('error', 'Documento no encontrado.');
+        }
 
-    $rutaCompleta = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . $documento['ruta_archivo'];
+        $rutaCompleta = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . $documento['ruta_archivo'];
 
-    if (!file_exists($rutaCompleta)) {
-        return redirect()->back()->with('error', 'El archivo no se encuentra disponible.');
-    }
+        if (!file_exists($rutaCompleta)) {
+            return redirect()->back()->with('error', 'El archivo no se encuentra disponible.');
+        }
 
-    return $this->response
-        ->setHeader('Content-Type', mime_content_type($rutaCompleta))
-        ->setHeader('Content-Disposition', 'inline; filename="' . basename($rutaCompleta) . '"')
-        ->setBody(file_get_contents($rutaCompleta));
+        return $this->response
+            ->setHeader('Content-Type', mime_content_type($rutaCompleta))
+            ->setHeader('Content-Disposition', 'inline; filename="' . basename($rutaCompleta) . '"')
+            ->setBody(file_get_contents($rutaCompleta));
     }
 
     public function aprobar($id)
@@ -78,7 +79,7 @@ class GestionSolicitud extends BaseController
             return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'Solicitud no encontrada.');
         }
 
-        $solicitudModel->update($id, ['estado' => 'aprobada']);
+        $solicitudModel->update($id, ['estado' => 'aprobada', 'fecha_resolucion' => date('Y-m-d H:i:s')]);
         $usuarioModel->update($solicitud['usuario_id'], ['activo' => 1]);
         return redirect()->to('/gestionSolicitudes/listarPendientes')->with('exito', 'Solicitud aprobada exitosamente.');
     }
@@ -92,26 +93,7 @@ class GestionSolicitud extends BaseController
             return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'Solicitud no encontrada.');
         }
 
-        $solicitudModel->update($id, ['estado' => 'rechazada']);
+        $solicitudModel->update($id, ['estado' => 'rechazada', 'fecha_resolucion' => date('Y-m-d H:i:s')]);
         return redirect()->to('/gestionSolicitudes/listarPendientes')->with('exito', 'Solicitud rechazada exitosamente.');
-    }
-
-    private function estadoBadge(string $estado): array
-    {
-        $badgeClase = match ($estado) {
-            'recibida' => 'badge-recibida',
-            'en revision' => 'badge-en-revision',
-            'aprobada' => 'badge-aprobada',
-            'rechazada' => 'badge-rechazada',
-        };
-
-        $badgeTexto = match ($estado) {
-            'recibida' => 'Recibida',
-            'en revision' => 'En revisión',
-            'aprobada' => 'Aprobada',
-            'rechazada' => 'Rechazada',
-        };
-
-        return ['clase' => $badgeClase, 'texto' => $badgeTexto];
     }
 }
