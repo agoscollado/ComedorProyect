@@ -63,9 +63,9 @@ class SolicitudModel extends Model
         return ['clase' => $badgeClase, 'texto' => $badgeTexto];
     }
 
-    public function pasarARevisionLasAntiguas(): void
+    public function actualizarEstadosVencidos(): void
     {
-        $limite = date('d/m/Y H:i:s', strtotime('-1 day'));
+        $limite = date('Y-m-d H:i:s', strtotime('-1 day'));
 
         $this->builder()
             ->where('estado', 'recibida')

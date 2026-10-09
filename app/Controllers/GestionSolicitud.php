@@ -11,7 +11,7 @@ class GestionSolicitud extends BaseController
     { //lista todas las solicitudes que están en estado "recibida" o "en revision"
         $solicitudModel = new \App\Models\SolicitudModel();
         $usuarioModel = new \App\Models\UsuarioModel();
-        $solicitudModel->pasarARevisionLasAntiguas(); //actualizamos los estados de las solicitudes que hayan vencido, para que se refleje en la vista del panel del estudiante.
+        $solicitudModel->actualizarEstadosVencidos(); //actualizamos los estados de las solicitudes que hayan vencido, para que se refleje en la vista del panel del estudiante.
 
         $solicitudesPendientes = $solicitudModel
             ->whereIn('estado', ['recibida', 'en revision'])

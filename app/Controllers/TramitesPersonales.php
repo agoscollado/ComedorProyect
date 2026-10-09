@@ -10,7 +10,7 @@ class TramitesPersonales extends BaseController
     public function index()
     {
         $solicitudModel = new \App\Models\SolicitudModel();
-        $solicitudModel->pasarARevisionLasAntiguas(); //actualizamos los estados de las solicitudes que hayan vencido, para que se refleje en la vista del panel del estudiante.
+        $solicitudModel->actualizarEstadosVencidos(); //actualizamos los estados de las solicitudes que hayan vencido, para que se refleje en la vista del panel del estudiante.
 
         $usuarioId = session()->get('usuario_id');
         $solicitudes = $solicitudModel->where('usuario_id', $usuarioId)->orderBy('fecha_creacion', 'DESC')->findAll();

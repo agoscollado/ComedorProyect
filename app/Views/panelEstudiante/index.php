@@ -21,7 +21,7 @@
         </div>
         <nav>
             <a class="nav-link" href="<?= base_url('tramites') ?>">Mis trámites</a>
-            <a class="nav-link" href="#">Chequera</a>
+            <a class="nav-link" href="<?= base_url('chequera') ?>">Chequera</a>
             <a class="nav-link" href="#">Reclamos</a>
             <div class="user-chip">
                 <div class="user-avatar"><?= esc(strtoupper(substr(session()->get('nombre'), 0, 1))) ?></div>
@@ -141,11 +141,11 @@
                 <a class="card-link" href="<?= base_url('solicitud/nueva') ?>">Cargar documentación →</a>
             </div>
 
-            <div class="action-card disabled">
+            <div class="action-card">
                 <div class="num">02 — Chequera</div>
                 <h3>Historial de acreditaciones</h3>
-                <p>Disponible en el próximo incremento del sistema.</p>
-                <span class="card-link">Próximamente</span>
+                <p>Consulta el historial de tus acreditaciones en la chequera.</p>
+                <a class="card-link" href="<?= base_url('chequera') ?>">Ver historial →</a>
             </div>
 
             <div class="action-card disabled">

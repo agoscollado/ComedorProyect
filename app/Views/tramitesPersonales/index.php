@@ -19,6 +19,7 @@
         <nav>
             <a class="nav-link" href="<?= base_url('panel-estudiante') ?>">Mi panel</a>
             <a class="nav-link" href="<?= base_url('tramites') ?>">Trámites personales</a>
+            <a class="nav-link" href="<?= base_url('chequera') ?>">Chequera</a>
             <div class="user-chip">
                 <div class="user-avatar"><?= esc(strtoupper(substr(session()->get('nombre'), 0, 1))) ?></div>
                 <div>
