@@ -23,6 +23,10 @@ class GestionBeneficiarios extends BaseController
             return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('error', 'Usuario no encontrado.');
         }
 
+        if ($usuario['rol'] !== 'estudiante') {
+            return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('error', 'Solo se puede dar de baja a estudiantes.');
+        }
+
         $usuarioModel->update($id, ['activo' => 0]); // Cambia el estado a inactivo
         return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('exito', 'Usuario dado de baja correctamente.');
     }

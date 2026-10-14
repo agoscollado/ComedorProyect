@@ -76,12 +76,14 @@
                             <td><?= esc($usuario['carrera']) ?></td>
                             <td>
                                 <form class="form-inline" action="<?= base_url('gestionChequera/registrarAcreditacion/' . $usuario['id']) ?>" method="post">
+                                    <?= csrf_field() ?>
                                     <input type="number" name="monto" step="0.01" min="0.01" placeholder="Monto" required>
                                     <button type="submit" class="btn-acreditar">Acreditar</button>
                                 </form>
                             </td>
                             <td>
                                 <form action="<?= base_url('gestionBeneficiarios/darDeBaja/' . $usuario['id']) ?>" method="post">
+                                    <?= csrf_field() ?>
                                     <button type="submit" class="btn-baja">Dar de baja</button>
                                 </form>
                             </td>

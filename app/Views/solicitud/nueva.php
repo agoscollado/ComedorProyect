@@ -41,6 +41,7 @@
             aunque el usuario los haya seleccionado.
         -->
         <form action="<?= base_url('solicitud/crear') ?>" method="post" enctype="multipart/form-data">
+            <?= csrf_field() ?>
 
             <label for="tipo">Tipo de trámite:</label>
             <select id="tipo" name="tipo" required>

@@ -4,11 +4,18 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\UsuarioModel;
 
 class GestionChequera extends BaseController
 {
     public function registrarAcreditacion($id)
     {
+        $usuario = (new UsuarioModel())->find($id);
+        if ($usuario === null || $usuario['rol'] !== 'estudiante' || !$usuario['activo']) {
+            return redirect()->to('/gestionBeneficiarios/listarUsuarios')
+                ->with('error', 'Solo se pueden acreditar chequeras de estudiantes activos.');
+        }
+
         $reglas = [
             'monto' => [
                 'rules' => 'required|decimal|greater_than[0]',
@@ -33,6 +40,9 @@ class GestionChequera extends BaseController
             $chequera_id = $chequera['id'];
         } else {
             $chequera_id = $chequeraModel->insert(['usuario_id' => $id, 'estado' => 'activa']);
+            if (!$chequera_id) {
+                return redirect()->back()->with('error', 'No se pudo crear la chequera.');
+            }
         }
 
         $data = [

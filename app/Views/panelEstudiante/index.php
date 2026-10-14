@@ -52,6 +52,18 @@
                 <?= esc(session()->getFlashdata('error')) ?>
             </div>
         <?php endif; ?>
+
+        <?php if (!empty($avisoRenovacion)): ?>
+            <div class="aviso-renovacion" role="alert">
+                <strong>Se acerca el vencimiento de tu renovación.</strong>
+                <p>
+                    <?= esc($avisoRenovacion['nombre']) ?>: presentá tu renovación hasta el
+                    <?= esc(date('d/m/Y', strtotime($avisoRenovacion['fecha_limite_solicitudes']))) ?>
+                    inclusive para continuar usando el servicio.
+                </p>
+                <a href="<?= base_url('solicitud/nueva') ?>">Presentar renovación</a>
+            </div>
+        <?php endif; ?>
     </section>
 
     <section class="dashboard">

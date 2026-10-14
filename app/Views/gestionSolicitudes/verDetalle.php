@@ -91,9 +91,11 @@ $etiquetasDocumento = [
                 <h2>Decisión</h2>
                 <div class="action-card">
                     <form action="<?= base_url('gestionSolicitudes/aprobar/' . $solicitud['id']) ?>" method="post" style="margin-bottom:10px;">
+                        <?= csrf_field() ?>
                         <button type="submit" class="btn" style="width:100%; background-color: var(--color-primario); color: var(--color-fondo);">Aprobar</button>
                     </form>
                     <form action="<?= base_url('gestionSolicitudes/rechazar/' . $solicitud['id']) ?>" method="post">
+                        <?= csrf_field() ?>
                         <button type="submit" class="btn btn-ghost" style="width:100%;">Rechazar</button>
                     </form>
                 </div>

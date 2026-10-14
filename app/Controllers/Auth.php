@@ -34,6 +34,7 @@ class Auth extends BaseController
                 return redirect()->back()->with('error', 'Email, contraseña o rol incorrectos');
             }
         //iniciar sesión
+        session()->regenerate(true);
         session()->set([
             'usuario_id' => $usuario['id'],
             'nombre' => $usuario['nombre'],

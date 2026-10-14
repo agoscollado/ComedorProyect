@@ -10,24 +10,21 @@ use CodeIgniter\Http\Files\UploadedFile;
 class Solicitud extends BaseController
 {
     public function mostrarFormulario()
-    {   //Auth.php ya se encargó de que solo estudiantes logueados puedan llegar a este método, pero además filtramos por "activo" para que no puedan crear solicitudes los estudiantes inactivos.
-        $usuarioModel = new \App\Models\UsuarioModel();
-        $usuario = $usuarioModel->find(session()->get('usuario_id'));
-
-        if (!$usuario['activo']) {
-            return redirect()->to('/panel-estudiante')->with('error', 'Tu cuenta está inactiva. Contactá al comedor para más información.');
+    {
+        if ($bloqueo = $this->bloqueoDeAcceso()) {
+            return $bloqueo;
         }
+
         return view('solicitud/nueva');
     }
 
     public function crear()
-    {   //filtro de acceso: solo estudiantes activos pueden crear solicitudes
-        $usuarioModel = new \App\Models\UsuarioModel();
-        $usuario = $usuarioModel->find(session()->get('usuario_id'));
-
-        if (!$usuario['activo']) {
-            return redirect()->to('/panel-estudiante')->with('error', 'Tu cuenta está inactiva. Contactá al comedor para más información.');
+    {
+        $tipoSolicitud = $this->request->getPost('tipo');
+        if ($bloqueo = $this->bloqueoDeAcceso(is_string($tipoSolicitud) ? $tipoSolicitud : null)) {
+            return $bloqueo;
         }
+
         //Reglas de validación para los campos del formulario.
         $reglas = [
             // required: no puede venir vacío
@@ -62,34 +59,83 @@ class Solicitud extends BaseController
         //Conexión directa a la base, para poder usar transacciones (insertar varias cosas como un solo bloque, que se confirma o deshace entero).
         $db = \Config\Database::connect();
 
-        //A partir de acá, todo insert/update queda "en pausa", no confirmado todavía.
-        $db->transStart();
+        $archivosGuardados = [];
+        $transaccionCompletada = false;
+        $transaccionAbierta = false;
+        if (!$db->transBegin()) {
+            return redirect()->back()->with('error', 'No se pudo iniciar el registro de la solicitud.');
+        }
+        $transaccionAbierta = true;
 
-        $solicitudId = $solicitudModel->insert([
-            //Usamos el usuario_id de la SESIÓN, no de un campo del formulario, así evitamos que alguien pueda mandar un usuario_id ajeno a mano.
-            'usuario_id'     => session()->get('usuario_id'),
-            'tipo'           => $tipo,
-            'estado'         => 'recibida', // estado por defecto
-            'fecha_creacion' => date('Y-m-d H:i:s'),
-        ]);
+        try {
+            $solicitudId = $solicitudModel->insert([
+                'usuario_id'     => session()->get('usuario_id'),
+                'tipo'           => $tipo,
+                'estado'         => 'recibida',
+                'fecha_creacion' => date('Y-m-d H:i:s'),
+            ]);
 
-        //Reutilizamos el mismo método privado para los dos archivos, en vez de repetir 2 veces el bloque de "generar nombre + mover + insertar".
-        $this->guardarDocumento($documentoModel, $solicitudId, 'dni', $dni);
-        $this->guardarDocumento($documentoModel, $solicitudId, 'certificado', $certificado);
+            if (!$solicitudId) {
+                throw new \RuntimeException('No se pudo registrar la solicitud.');
+            }
 
-        //Le decimos a la base "confirmá todo lo anterior de una, o si algo salió mal en el medio, deshacé todo (rollback automático)".
-        $db->transComplete();
+            $this->guardarDocumento($documentoModel, $solicitudId, 'dni', $dni, $archivosGuardados);
+            $this->guardarDocumento($documentoModel, $solicitudId, 'certificado', $certificado, $archivosGuardados);
 
-        //transStatus() nos dice si la transacción terminó bien o no.
-        if ($db->transStatus() === false) {
-            return redirect()->back()->with('error', 'No se pudo procesar la solicitud, intentá de nuevo');
+            if (!$db->transStatus()) {
+                throw new \RuntimeException('No se pudo guardar la documentación.');
+            }
+
+            if (!$db->transCommit()) {
+                throw new \RuntimeException('No se pudo confirmar la solicitud.');
+            }
+            $transaccionAbierta = false;
+
+            $transaccionCompletada = true;
+        } finally {
+            if (!$transaccionCompletada) {
+                if ($transaccionAbierta) {
+                    $db->transRollback();
+                }
+
+                foreach ($archivosGuardados as $rutaArchivo) {
+                    if (is_file($rutaArchivo) && !unlink($rutaArchivo)) {
+                        log_message('error', 'No se pudo eliminar el archivo de solicitud fallida: ' . $rutaArchivo);
+                    }
+                }
+            }
         }
 
         return redirect()->to('/panel-estudiante')->with('exito', 'Documentación enviada correctamente');
     }
 
+    private function bloqueoDeAcceso(?string $tipoSolicitud = null)
+    {//Auth.php ya se encargó de que el usuario esté logueado, así que acá asumimos que sí lo está.
+        $usuarioModel = new \App\Models\UsuarioModel();
+        $usuario = $usuarioModel->find(session()->get('usuario_id'));
+
+        if (!$usuario['activo']) {
+            $solicitudModel = new SolicitudModel();
+            $tieneSolicitudAprobada = $solicitudModel
+                ->where('usuario_id', $usuario['id'])
+                ->where('estado', 'aprobada')
+                ->countAllResults() > 0;
+
+            if ($tieneSolicitudAprobada || ($tipoSolicitud !== null && $tipoSolicitud !== 'inscripcion')) {
+                return redirect()->to('/panel-estudiante')->with('error', 'Tu cuenta está inactiva. Contactá al comedor para más información.');
+            }
+        }
+
+        $calendario = new \App\Libraries\CalendarioAcademico();
+        if (!$calendario->solicitudesAbiertas(date('Y-m-d'))) {
+            return redirect()->to('/panel-estudiante')->with('error', 'El plazo para presentar solicitudes está cerrado. Se vuelve a habilitar al comenzar el próximo cuatrimestre.');
+        }
+
+        return null;
+    }
+
     //Cada parámetro tiene su tipo declarado (type hint), lo cual ayuda a evitar errores tontos como pasar un string donde se esperaba un objeto UploadedFile.
-    private function guardarDocumento(DocumentoModel $documentoModel, int $solicitudId, string $tipoDocumento, UploadedFile $archivo)
+    private function guardarDocumento(DocumentoModel $documentoModel, int $solicitudId, string $tipoDocumento, UploadedFile $archivo, array &$archivosGuardados)
     {
         //Generamos un nombre aleatorio y único para el archivo. Evita que dos estudiantes que suben "dni.pdf" se pisen entre sí, y evita que alguien adivine el nombre de un archivo ajeno.
         $nombreArchivo = $archivo->getRandomName();
@@ -97,12 +143,16 @@ class Solicitud extends BaseController
         //WRITEPATH apunta siempre a la carpeta writable/ del proyecto, sin importar el sistema operativo o dónde esté instalado CodeIgniter.
         //Guardamos ACA (no en public/) para que el archivo no sea accesible directo por URL sin pasar por nuestro control de sesión/roles.
         $archivo->move(WRITEPATH . 'uploads', $nombreArchivo);
+        $rutaArchivo = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . $nombreArchivo;
+        $archivosGuardados[] = $rutaArchivo;
 
-        $documentoModel->insert([
+        if (!$documentoModel->insert([
             'solicitud_id'   => $solicitudId,
             'tipo_documento' => $tipoDocumento,
             'ruta_archivo'   => $nombreArchivo,
             'fecha_carga'    => date('Y-m-d H:i:s'),
-        ]);
+        ])) {
+            throw new \RuntimeException('No se pudieron registrar los documentos de la solicitud.');
+        }
     }
 }

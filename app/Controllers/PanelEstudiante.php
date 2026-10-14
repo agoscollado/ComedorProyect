@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Libraries\CalendarioAcademico;
+use App\Models\UsuarioModel;
 
 class PanelEstudiante extends BaseController
 {
@@ -19,9 +21,48 @@ class PanelEstudiante extends BaseController
             $solicitud['progreso'] = $this->calcularProgreso($solicitud['estado']);
             $solicitud['badge'] = $solicitudModel->estadoBadge($solicitud['estado']);
         }
+
+        $avisoRenovacion = null;
+        $usuario = (new UsuarioModel())->find(session()->get('usuario_id'));
+        if ($usuario !== null && $usuario['activo']) {
+            $tieneSolicitudAprobada = false;
+            foreach ($solicitudes as $solicitud) {
+                if ($solicitud['estado'] === 'aprobada') {
+                    $tieneSolicitudAprobada = true;
+                    break;
+                }
+            }
+
+            if ($tieneSolicitudAprobada) {
+                $calendario = new CalendarioAcademico();
+                $cuatrimestre = $calendario->avisoVencimientoEn(date('Y-m-d'));
+
+                if ($cuatrimestre !== null) {
+                    $renovacionPresentada = false;
+                    foreach ($solicitudes as $solicitud) {
+                        $fechaSolicitud = substr($solicitud['fecha_creacion'], 0, 10);
+                        if (
+                            $solicitud['tipo'] === 'renovacion'
+                            && in_array($solicitud['estado'], ['recibida', 'en revision', 'aprobada'], true)
+                            && $fechaSolicitud >= $cuatrimestre['inicio']
+                            && $fechaSolicitud <= $cuatrimestre['fin']
+                        ) {
+                            $renovacionPresentada = true;
+                            break;
+                        }
+                    }
+
+                    if (!$renovacionPresentada) {
+                        $avisoRenovacion = $cuatrimestre;
+                    }
+                }
+            }
+        }
+
         //retornamos la vista del panel del estudiante, pasando las solicitudes encontradas para que se muestren en la vista.
         return view('panelEstudiante/index', [
             'solicitudes' => $solicitudes,
+            'avisoRenovacion' => $avisoRenovacion,
         ]);
     }
 

@@ -70,22 +70,17 @@ class GestionSolicitud extends BaseController
     }
 
     public function aprobar($id)
-    { //aprueba la solicitud y cambia su estado a "aprobada", también activa al usuario correspondiente en la tabla de usuarios
-        $usuarioModel = new \App\Models\UsuarioModel();
-        $solicitudModel = new \App\Models\SolicitudModel();
-        $solicitud = $solicitudModel->find($id);
-
-        if (!$solicitud) {
-            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'Solicitud no encontrada.');
-        }
-
-        $solicitudModel->update($id, ['estado' => 'aprobada', 'fecha_resolucion' => date('Y-m-d H:i:s')]);
-        $usuarioModel->update($solicitud['usuario_id'], ['activo' => 1]);
-        return redirect()->to('/gestionSolicitudes/listarPendientes')->with('exito', 'Solicitud aprobada exitosamente.');
+    {
+        return $this->resolverSolicitud($id, 'aprobada');
     }
 
     public function rechazar($id)
-    { //rechaza la solicitud y cambia su estado a "rechazada"
+    {
+        return $this->resolverSolicitud($id, 'rechazada');
+    }
+
+    private function resolverSolicitud($id, string $estado)
+    {
         $solicitudModel = new \App\Models\SolicitudModel();
         $solicitud = $solicitudModel->find($id);
 
@@ -93,7 +88,54 @@ class GestionSolicitud extends BaseController
             return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'Solicitud no encontrada.');
         }
 
-        $solicitudModel->update($id, ['estado' => 'rechazada', 'fecha_resolucion' => date('Y-m-d H:i:s')]);
-        return redirect()->to('/gestionSolicitudes/listarPendientes')->with('exito', 'Solicitud rechazada exitosamente.');
+        $estadosPendientes = ['recibida', 'en revision'];
+        if (!in_array($solicitud['estado'], $estadosPendientes, true)) {
+            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'La solicitud ya fue resuelta.');
+        }
+
+        $db = \Config\Database::connect();
+        if (!$db->transBegin()) {
+            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo iniciar la actualización.');
+        }
+
+        $actualizada = $db->table('solicitudes')
+            ->where('id', $id)
+            ->whereIn('estado', $estadosPendientes)
+            ->update([
+                'estado' => $estado,
+                'fecha_resolucion' => date('Y-m-d H:i:s'),
+            ]);
+
+        if (!$actualizada || $db->affectedRows() !== 1) {
+            $db->transRollback();
+            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'La solicitud ya fue resuelta.');
+        }
+
+        if ($estado === 'aprobada') {
+            $usuarioActualizado = $db->table('usuarios')
+                ->where('id', $solicitud['usuario_id'])
+                ->update(['activo' => 1]);
+
+            if (!$usuarioActualizado) {
+                $db->transRollback();
+                return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo activar al estudiante.');
+            }
+        }
+
+        if (!$db->transStatus()) {
+            $db->transRollback();
+            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo actualizar la solicitud.');
+        }
+
+        if (!$db->transCommit()) {
+            $db->transRollback();
+            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo actualizar la solicitud.');
+        }
+
+        $mensaje = $estado === 'aprobada'
+            ? 'Solicitud aprobada exitosamente.'
+            : 'Solicitud rechazada exitosamente.';
+
+        return redirect()->to('/gestionSolicitudes/listarPendientes')->with('exito', $mensaje);
     }
 }
