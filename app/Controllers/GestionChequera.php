@@ -33,28 +33,49 @@ class GestionChequera extends BaseController
 
         $acreditacionModel = new \App\Models\AcreditacionModel();
         $chequeraModel = new \App\Models\ChequeraModel();
+        $db = \Config\Database::connect();
+        $transaccionAbierta = false;
 
-        $chequera = $chequeraModel->where('usuario_id', $id)->first();
-
-        if ($chequera) {
-            $chequera_id = $chequera['id'];
-        } else {
-            $chequera_id = $chequeraModel->insert(['usuario_id' => $id, 'estado' => 'activa']);
-            if (!$chequera_id) {
-                return redirect()->back()->with('error', 'No se pudo crear la chequera.');
+        try {
+            if (!$db->transBegin()) {
+                throw new \RuntimeException('No se pudo iniciar la transacción.');
             }
+            $transaccionAbierta = true;
+
+            $chequera = $chequeraModel->where('usuario_id', $id)->first();
+            $chequeraId = $chequera['id'] ?? $chequeraModel->insert([
+                'usuario_id' => $id,
+                'estado' => 'activa',
+            ]);
+
+            if (!$chequeraId) {
+                throw new \RuntimeException('No se pudo crear la chequera.');
+            }
+
+            $acreditacionId = $acreditacionModel->insert([
+                'chequera_id' => $chequeraId,
+                'monto' => $this->request->getPost('monto'),
+                'fecha_acreditacion' => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$acreditacionId || !$db->transStatus() || !$db->transCommit()) {
+                throw new \RuntimeException('No se pudo guardar la acreditación.');
+            }
+
+            $transaccionAbierta = false;
+        } catch (\Throwable $exception) {
+            if ($transaccionAbierta && !$db->transRollback()) {
+                log_message('error', 'No se pudo revertir el registro de acreditación para el estudiante {id}.', ['id' => $id]);
+            }
+
+            log_message('error', 'No se pudo registrar una acreditación para el estudiante {id}: {error}', [
+                'id' => $id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->back()->with('error', 'No se pudo registrar la acreditación. Intentá de nuevo.');
         }
 
-        $data = [
-            'chequera_id' => $chequera_id,
-            'monto' => $this->request->getPost('monto'),
-            'fecha_acreditacion' => date('Y-m-d H:i:s'),
-        ];
-
-        if ($acreditacionModel->insert($data)) {
-            return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('exito', 'Acreditación registrada exitosamente');
-        } else {
-            return redirect()->back()->with('error', 'Error al registrar la acreditación');
-        }
+        return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('exito', 'Acreditación registrada exitosamente.');
     }
 }

@@ -34,7 +34,10 @@ $etiquetasDocumento = [
                         <div class="user-role">Responsable</div>
                     </div>
                 </div>
-                <a class="btn btn-ghost" href="<?= base_url('logout') ?>">Cerrar sesión</a>
+                <form class="logout-form" action="<?= base_url('logout') ?>" method="post">
+                    <?= csrf_field() ?>
+                    <button class="btn btn-ghost" type="submit">Cerrar sesión</button>
+                </form>
             </nav>
         </div>
     </header>

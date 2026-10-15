@@ -10,7 +10,7 @@ $routes->get('/', function () {
 //Autenticacion
 $routes->get('/login', 'Auth::mostrarFormLogin');
 $routes->post('/login', 'Auth::procesarLogin');
-$routes->get('/logout', 'Auth::logout');
+$routes->post('/logout', 'Auth::logout');
 //Panel Estudiante
 $routes->get('/panel-estudiante', 'PanelEstudiante::index', ['filter' => 'auth:estudiante']);
 $routes->get('/tramites', 'TramitesPersonales::index', ['filter' => 'auth:estudiante']);

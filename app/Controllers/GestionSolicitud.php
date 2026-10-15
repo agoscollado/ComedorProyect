@@ -94,42 +94,56 @@ class GestionSolicitud extends BaseController
         }
 
         $db = \Config\Database::connect();
-        if (!$db->transBegin()) {
-            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo iniciar la actualización.');
-        }
+        $transaccionAbierta = false;
 
-        $actualizada = $db->table('solicitudes')
-            ->where('id', $id)
-            ->whereIn('estado', $estadosPendientes)
-            ->update([
-                'estado' => $estado,
-                'fecha_resolucion' => date('Y-m-d H:i:s'),
+        try {
+            if (!$db->transBegin()) {
+                throw new \RuntimeException('No se pudo iniciar la transacción.');
+            }
+            $transaccionAbierta = true;
+
+            $actualizada = $db->table('solicitudes')
+                ->where('id', $id)
+                ->whereIn('estado', $estadosPendientes)
+                ->update([
+                    'estado' => $estado,
+                    'fecha_resolucion' => date('Y-m-d H:i:s'),
+                ]);
+
+            if (!$actualizada || $db->affectedRows() !== 1) {
+                $db->transRollback();
+                $transaccionAbierta = false;
+
+                return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'La solicitud ya fue resuelta.');
+            }
+
+            if ($estado === 'aprobada') {
+                $usuarioActualizado = $db->table('usuarios')
+                    ->where('id', $solicitud['usuario_id'])
+                    ->update(['activo' => 1]);
+
+                if (!$usuarioActualizado) {
+                    throw new \RuntimeException('No se pudo activar al estudiante.');
+                }
+            }
+
+            if (!$db->transStatus() || !$db->transCommit()) {
+                throw new \RuntimeException('No se pudo guardar la decisión.');
+            }
+
+            $transaccionAbierta = false;
+        } catch (\Throwable $exception) {
+            if ($transaccionAbierta && !$db->transRollback()) {
+                log_message('error', 'No se pudo revertir la decisión de solicitud {id}.', ['id' => $id]);
+            }
+
+            log_message('error', 'No se pudo resolver la solicitud {id}: {error}', [
+                'id' => $id,
+                'error' => $exception->getMessage(),
             ]);
 
-        if (!$actualizada || $db->affectedRows() !== 1) {
-            $db->transRollback();
-            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'La solicitud ya fue resuelta.');
-        }
-
-        if ($estado === 'aprobada') {
-            $usuarioActualizado = $db->table('usuarios')
-                ->where('id', $solicitud['usuario_id'])
-                ->update(['activo' => 1]);
-
-            if (!$usuarioActualizado) {
-                $db->transRollback();
-                return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo activar al estudiante.');
-            }
-        }
-
-        if (!$db->transStatus()) {
-            $db->transRollback();
-            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo actualizar la solicitud.');
-        }
-
-        if (!$db->transCommit()) {
-            $db->transRollback();
-            return redirect()->to('/gestionSolicitudes/listarPendientes')->with('error', 'No se pudo actualizar la solicitud.');
+            return redirect()->to('/gestionSolicitudes/listarPendientes')
+                ->with('error', 'No se pudo actualizar la solicitud. Intentá de nuevo.');
         }
 
         $mensaje = $estado === 'aprobada'

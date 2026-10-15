@@ -8,8 +8,9 @@ class Cuatrimestres extends BaseConfig
 {
     
     /**
-     * Cuatrimestres habilitados, en orden cronológico.
-     * Fechas inclusivas, formato Y-m-d.
+     * Cuatrimestres habilitados, ordenados y sin superposición.
+     * Cada entrada requiere nombre, inicio y fin en formato Y-m-d inclusivo.
+     * Los días de aviso y cierre deben ser enteros no negativos y no superar la duración de ninguno de los cuatrimestres; el aviso no puede comenzar después del cierre.
      * IMPORTANTE: fuera de estos rangos el formulario de solicitudes queda bloqueado.
      * Hay que cargar los del 2027 apenas se publique el calendario académico.
      */

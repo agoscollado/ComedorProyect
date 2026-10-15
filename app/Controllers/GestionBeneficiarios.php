@@ -27,7 +27,25 @@ class GestionBeneficiarios extends BaseController
             return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('error', 'Solo se puede dar de baja a estudiantes.');
         }
 
-        $usuarioModel->update($id, ['activo' => 0]); // Cambia el estado a inactivo
+        try {
+            $actualizado = $usuarioModel->update($id, ['activo' => 0]);
+        } catch (\Throwable $exception) {
+            log_message('error', 'No se pudo dar de baja al estudiante ID {id}: {error}', [
+                'id' => $id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->to('/gestionBeneficiarios/listarUsuarios')
+                ->with('error', 'No se pudo dar de baja al estudiante. Intentá de nuevo.');
+        }
+
+        if (!$actualizado) {
+            log_message('error', 'No se pudo dar de baja al estudiante ID {id}.', ['id' => $id]);
+
+            return redirect()->to('/gestionBeneficiarios/listarUsuarios')
+                ->with('error', 'No se pudo dar de baja al estudiante. Intentá de nuevo.');
+        }
+
         return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('exito', 'Usuario dado de baja correctamente.');
     }
 }

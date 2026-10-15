@@ -92,10 +92,21 @@ class Solicitud extends BaseController
             $transaccionAbierta = false;
 
             $transaccionCompletada = true;
+        } catch (\Throwable $exception) {
+            log_message('error', 'No se pudo crear la solicitud del usuario {usuario}: {error}', [
+                'usuario' => session()->get('usuario_id'),
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->back()->with('error', 'No se pudo procesar la solicitud. Intentá de nuevo.');
         } finally {
             if (!$transaccionCompletada) {
                 if ($transaccionAbierta) {
-                    $db->transRollback();
+                    if (!$db->transRollback()) {
+                        log_message('error', 'No se pudo revertir la transacción de solicitud del usuario {usuario}.', [
+                            'usuario' => session()->get('usuario_id'),
+                        ]);
+                    }
                 }
 
                 foreach ($archivosGuardados as $rutaArchivo) {

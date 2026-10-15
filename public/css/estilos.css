@@ -413,6 +413,7 @@ nav a.nav-link:hover { color: var(--color-primario); }
 }
 .btn-ghost { border-color: var(--color-linea); color: var(--color-neutro-oscuro); background: transparent; }
 .btn-ghost:hover { border-color: var(--color-primario); color: var(--color-primario); }
+.logout-form { margin: 0; }
 
 /* Bienvenida */
 .welcome { padding: 48px 0 8px; }
