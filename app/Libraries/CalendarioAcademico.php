@@ -7,7 +7,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 
 class CalendarioAcademico
-{
+{ // esta clase se encarga de manejar la información de los cuatrimestres y los avisos de vencimiento de las solicitudes de renovación.
     private array $cuatrimestres;
 
     private int $diasAvisoVencimiento;
@@ -15,7 +15,7 @@ class CalendarioAcademico
     private int $diasCierreSolicitudes;
 
     public function __construct(?object $configuracion = null)
-    {
+    { // si no se pasa un objeto de configuración, se carga la configuración por defecto desde Config\Cuatrimestres.
         $configuracion ??= config(Cuatrimestres::class);
 
         if (
@@ -37,7 +37,7 @@ class CalendarioAcademico
 
         $finAnterior = null;
         foreach ($configuracion->cuatrimestres as $cuatrimestre) {
-            if (
+            if ( // validamos que cada cuatrimestre tenga nombre, inicio y fin válidos, y que no se superpongan entre sí.
                 !is_array($cuatrimestre)
                 || !isset($cuatrimestre['nombre'], $cuatrimestre['inicio'], $cuatrimestre['fin'])
                 || !is_string($cuatrimestre['nombre'])
@@ -71,7 +71,7 @@ class CalendarioAcademico
     }
 
     public function cuatrimestreEn(string $fecha): ?array
-    {
+    { // devuelve el cuatrimestre en el que cae la fecha dada, o null si no cae en ninguno.
         if (!$this->fechaValida($fecha)) {
             throw new InvalidArgumentException('La fecha debe tener formato Y-m-d y ser válida.');
         }
@@ -86,7 +86,7 @@ class CalendarioAcademico
     }
 
     public function solicitudesAbiertas(string $fecha): bool
-    {
+    { // devuelve true si la fecha dada está dentro del período en que se pueden presentar solicitudes, o false si no.
         $cuatrimestre = $this->cuatrimestreEn($fecha);
         if ($cuatrimestre === null) {
             return false;
@@ -100,7 +100,7 @@ class CalendarioAcademico
     }
 
     public function avisoVencimientoEn(string $fecha): ?array
-    {
+    { // devuelve el cuatrimestre en el que la fecha dada está dentro del período de aviso de vencimiento de solicitudes, o null si no lo está.
         $cuatrimestre = $this->cuatrimestreEn($fecha);
         if ($cuatrimestre === null) {
             return null;
@@ -123,7 +123,7 @@ class CalendarioAcademico
     }
 
     private function fechaValida(string $fecha): bool
-    {
+    { // devuelve true si la fecha dada tiene formato Y-m-d y es una fecha válida, o false si no.
         try {
             $fechaObjeto = DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
         } catch (\ValueError) {
