@@ -35,3 +35,14 @@ $routes->group('gestionBeneficiarios', ['filter' => 'auth:responsable'], functio
 $routes->group('gestionChequera', ['filter' => 'auth:responsable'], function($routes) {
     $routes->post('registrarAcreditacion/(:num)', 'GestionChequera::registrarAcreditacion/$1');
 });
+//Reclamos (Estudiante)
+$routes->group('reclamos', ['filter' => 'auth:estudiante'], function($routes) {
+    $routes->get('nuevo', 'Reclamo::mostrarFormulario');
+    $routes->post('crear', 'Reclamo::crear');
+});
+//Gestión de Reclamos (Responsable)
+$routes->group('gestionReclamos', ['filter' => 'auth:responsable'], function($routes) {
+    $routes->get('listar', 'GestionReclamo::index');
+    $routes->get('verDetalle/(:num)', 'GestionReclamo::verDetalle/$1');
+    $routes->post('responder/(:num)', 'GestionReclamo::responder/$1');
+});

@@ -683,6 +683,58 @@ table.history-table {
     letter-spacing: 0.02em;
     cursor: pointer;
 }
+/* ==========================================================================
+    Reclamos
+   ========================================================================== */
+.form-card select,
+.form-card input[type="file"],
+.form-card textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--color-linea);
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--color-neutro-oscuro);
+}
+
+.form-card textarea {
+    resize: vertical;
+}
+
+/* Detalle de reclamo (Responsable) */
+.welcome-detalle { padding-top: 24px; }
+.welcome-detalle .card-link { display: inline-block; margin-bottom: 12px; }
+.welcome-detalle .badge { margin-left: 8px; }
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-top: 24px;
+}
+.detalle-grid > .tracker-card,
+.detalle-grid > .form-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+    .detalle-grid { grid-template-columns: 1fr; }
+}
+
+/* Descripción / respuesta destacadas en el detalle del reclamo */
+.detalle-grid .tracker-card .label {
+    font-weight: 700;
+    color: var(--color-acento);
+    margin-bottom: 8px;
+}
+
+/* El badge baja de línea porque ".welcome p" limita el ancho a 560px */
+.welcome-detalle p { max-width: none; }
+.welcome-detalle .badge { vertical-align: middle; }
 
 footer {
     padding: 40px 0;
