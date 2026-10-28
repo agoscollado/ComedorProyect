@@ -10,8 +10,16 @@ class GestionBeneficiarios extends BaseController
     public function listarUsuarios()
     {
         $usuarioModel = new \App\Models\UsuarioModel();
-        $usuarios = $usuarioModel->where('activo', 1)->where('rol', 'estudiante')->findAll();
-        return view('gestionBeneficiarios/listarUsuarios', ['usuarios' => $usuarios]);
+        $usuarios = $usuarioModel
+            ->where('activo', 1)
+            ->where('rol', 'estudiante')
+            ->orderBy('nombre', 'ASC')
+            ->paginate(25, 'beneficiarios');
+
+        return view('gestionBeneficiarios/listarUsuarios', [
+            'usuarios' => $usuarios,
+            'pager' => $usuarioModel->pager,
+        ]);
     }
 
     public function darDeBaja($id)

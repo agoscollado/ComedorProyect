@@ -38,7 +38,17 @@ body{
 }
 
 body.panel-page {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    min-height: 100vh;
+}
+
+body.panel-page > main {
+    flex: 1;
+    width: 100%;
+    padding-bottom: 48px;
 }
 /* ==========================================================================
     Login: pestañas Estudiante / Responsable
@@ -587,6 +597,34 @@ table.history-table {
     font-size: 13.5px;
     border-top: 1px solid var(--color-linea);
 }
+.table-responsive { overflow-x: auto; }
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-top: 16px;
+}
+.paginacion-num {
+    background: none;
+    border: 0;
+    color: var(--color-texto-tenue);
+    font-weight: 500;
+    text-decoration: none;
+}
+.paginacion-num:hover { color: var(--color-acento); }
+.paginacion-num.activa {
+    border-bottom: 2px solid var(--color-primario);
+    color: var(--color-primario);
+    font-weight: 700;
+}
+.paginacion-flecha {
+    color: var(--color-primario);
+    font-size: 1.5rem;
+    line-height: 1;
+    text-decoration: none;
+}
+.paginacion-flecha-off { color: var(--color-linea); }
 .badge {
     display: inline-block;
     padding: 4px 10px;
@@ -721,25 +759,54 @@ table.history-table {
     box-sizing: border-box;
 }
 
-@media (max-width: 800px) {
-    .detalle-grid { grid-template-columns: 1fr; }
-}
-
-/* Descripción / respuesta destacadas en el detalle del reclamo */
 .detalle-grid .tracker-card .label {
     font-weight: 700;
     color: var(--color-acento);
     margin-bottom: 8px;
 }
 
-/* El badge baja de línea porque ".welcome p" limita el ancho a 560px */
+@media (max-width: 800px) {
+    .detalle-grid { grid-template-columns: 1fr; }
+}
+
 .welcome-detalle p { max-width: none; }
 .welcome-detalle .badge { vertical-align: middle; }
 
-footer {
-    padding: 40px 0;
+/* Listado de reclamos (Estudiante) */
+.acciones-reclamo { margin-top: 16px; }
+
+.reclamo-lista { display: grid; gap: 16px; }
+.reclamo-lista .badge { margin-top: 12px; }
+
+.reclamo-lista .campo { margin-top: 14px; }
+.reclamo-lista .campo-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-acento);
+    margin-bottom: 6px;
+}
+.reclamo-lista .campo-respuesta {
+    padding-top: 14px;
     border-top: 1px solid var(--color-linea);
-    margin-top: 24px;
+}
+.reclamo-lista .sin-respuesta {
+    color: var(--color-texto-tenue);
+    font-style: italic;
+}
+/* ----------------------------- ---------------------------------------------
+    Footer
+   ------------------------------------------------------------------------- */
+footer {
+    min-height: 96px;
+    border-top: 1px solid #C5CAD3;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+footer .wrap {
+    width: 100%;
 }
 .footer-inner { font-size: 13px; color: var(--color-texto-tenue); }
 

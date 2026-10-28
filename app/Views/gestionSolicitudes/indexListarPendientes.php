@@ -1,5 +1,6 @@
 <?php
 /** @var array $solicitudes */
+/** @var \CodeIgniter\Pager\Pager $pager */
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -30,7 +31,7 @@
 
         <section class="history">
             <div class="history-head">
-                <h2>Trámites por revisar (<?= count($solicitudes) ?>)</h2>
+                <h2>Trámites por revisar</h2>
             </div>
 
             <?php if (empty($solicitudes)): ?>
@@ -38,6 +39,7 @@
                     <p>No hay solicitudes pendientes por el momento.</p>
                 </div>
             <?php else: ?>
+                <div class="table-responsive">
                 <table class="history-table">
                     <thead>
                         <tr>
@@ -46,7 +48,7 @@
                             <th>Tipo</th>
                             <th>Fecha</th>
                             <th>Estado</th>
-                            <th></th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -62,6 +64,8 @@
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </div>
+                <?= $pager->links('solicitudes', 'comedorlistas') ?>
             <?php endif; ?>
         </section>
     </main>

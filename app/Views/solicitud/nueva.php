@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="<?= base_url('css/estilos.css') ?>?v=<?= time() ?>">
     <title>Cargar Documentación</title>
 </head>
-<body>
+<body class="panel-page">
 
+<?= $this->include('partials/headerEstudiante') ?>
+
+<main class="wrap">
     <div class="form-card">
         <h1>Cargar documentación</h1>
 
@@ -71,6 +74,13 @@
 
         </form>
     </div>
+</main>
+
+<footer>
+    <div class="wrap footer-inner">
+        Comedor Universitario · Secretaría de Bienestar Estudiantil
+    </div>
+</footer>
 
 </body>
 </html>

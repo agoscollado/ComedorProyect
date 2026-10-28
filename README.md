@@ -1,69 +1,52 @@
-# CodeIgniter 4 Application Starter
+# Comedor Universitario
 
-## What is CodeIgniter?
+Aplicación CodeIgniter 4 para la gestión de solicitudes de inscripción y renovación, documentación, beneficiarios, acreditaciones y reclamos.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Requisitos y puesta en marcha
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- PHP 8.2 o superior y las extensiones requeridas por CodeIgniter 4, incluyendo `intl`, `mbstring` y la extensión del motor de base de datos elegido.
+- Composer.
+- MySQL/MariaDB para la instalación habitual; PHPUnit usa la base SQLite en memoria configurada en `app/Config/Database.php`.
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+1. Instalar dependencias con `composer install`.
+2. Copiar `env` a `.env` y configurar `CI_ENVIRONMENT`, `app.baseURL`, la conexión de base de datos y `encryption.key`.
+3. Ejecutar las migraciones con `php spark migrate`.
+4. Configurar el servidor web para apuntar a `public/`, no a la raíz del proyecto.
+5. Ejecutar las pruebas con `composer test`.
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+No guardar `.env`, credenciales, documentos cargados ni archivos de sesión en el repositorio.
 
-## Installation & updates
+## Calendario académico
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+Las fechas oficiales no se generan automáticamente. La aplicación solo acepta solicitudes dentro de los períodos configurados; fuera de ellos, el formulario queda bloqueado. Los períodos de 2027 deben cargarse cuando se publique el calendario institucional.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+Se puede configurar la variable `academic.terms` en `.env` como un arreglo JSON de períodos, por ejemplo:
 
-## Setup
+```ini
+academic.terms = '[{"nombre":"1° cuatrimestre 2027","inicio":"FECHA-INICIO-AAAA-MM-DD","fin":"FECHA-FIN-AAAA-MM-DD"},{"nombre":"2° cuatrimestre 2027","inicio":"FECHA-INICIO-AAAA-MM-DD","fin":"FECHA-FIN-AAAA-MM-DD"}]'
+```
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+Reemplazar cada fecha de ejemplo por la fecha oficial en formato `AAAA-MM-DD`. Los períodos deben estar ordenados, no superponerse y tener nombre, inicio y fin válidos. La configuración se valida al utilizar el calendario; fechas ausentes o inválidas deben corregirse antes de habilitar solicitudes para el nuevo período.
 
-## Important Change with index.php
+Los días de aviso y cierre se configuran en `app/Config/Cuatrimestres.php`.
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+## Actualización de solicitudes vencidas
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+Las solicitudes en estado `recibida` pasan a `en revision` al superar las 24 horas. La actualización se ejecuta mediante el comando:
 
-**Please** read the user guide for a better explanation of how CI4 works!
+```console
+php spark solicitudes:actualizar-vencidas
+```
 
-## Repository Management
+Programar ese comando para ejecutarse al menos una vez por hora. En Windows, usar el Programador de tareas con `php.exe` como programa, `spark solicitudes:actualizar-vencidas` como argumentos y la raíz del proyecto como directorio de inicio. En Linux, se puede configurar una tarea cron equivalente. El usuario del proceso debe tener acceso a la configuración y a la base de datos de la aplicación.
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+## Despliegue
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+- Establecer `CI_ENVIRONMENT = production` en el entorno de producción.
+- Servir el sitio por HTTPS y configurar correctamente el host y `app.baseURL`.
+- Mantener `DBDebug` desactivado en producción y proteger las credenciales de base de datos y la clave de cifrado.
+- Mantener `writable/` fuera del acceso público; los documentos de solicitudes se guardan allí.
 
-## Server Requirements
+## Pruebas
 
-PHP version 8.2 or higher is required, with the following extensions installed:
-
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+`composer test` ejecuta PHPUnit sin solicitar cobertura, que requiere un controlador opcional como Xdebug. Para generar informes de cobertura, instalar y habilitar un controlador compatible y ejecutar PHPUnit con cobertura de forma explícita.

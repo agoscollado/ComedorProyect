@@ -7,7 +7,9 @@
             </div>
         </div>
         <nav>
-            <a class="nav-link" href="<?= base_url('gestionSolicitudes/listarPendientes') ?>">Solicitudes</a>
+            <?php if (!url_is('gestionSolicitudes/listarPendientes')): ?>
+                <a class="nav-link" href="<?= base_url('gestionSolicitudes/listarPendientes') ?>">Solicitudes</a>
+            <?php endif; ?>
             <a class="nav-link" href="<?= base_url('gestionBeneficiarios/listarUsuarios') ?>">Beneficiarios</a>
             <a class="nav-link" href="<?= base_url('gestionReclamos/listar') ?>">Reclamos</a>
             <div class="user-chip">

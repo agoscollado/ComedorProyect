@@ -36,6 +36,7 @@ $routes->group('gestionChequera', ['filter' => 'auth:responsable'], function($ro
     $routes->post('registrarAcreditacion/(:num)', 'GestionChequera::registrarAcreditacion/$1');
 });
 //Reclamos (Estudiante)
+$routes->get('/reclamos', 'Reclamo::index', ['filter' => 'auth:estudiante']);
 $routes->group('reclamos', ['filter' => 'auth:estudiante'], function($routes) {
     $routes->get('nuevo', 'Reclamo::mostrarFormulario');
     $routes->post('crear', 'Reclamo::crear');

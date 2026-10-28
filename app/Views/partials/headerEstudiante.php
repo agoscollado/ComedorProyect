@@ -12,7 +12,7 @@
             <?php endif; ?>
             <a class="nav-link" href="<?= base_url('tramites') ?>">Mis trámites</a>
             <a class="nav-link" href="<?= base_url('chequera') ?>">Chequera</a>
-            <a class="nav-link" href="<?= base_url('reclamos/nuevo') ?>">Reclamos</a>
+            <a class="nav-link" href="<?= base_url('reclamos') ?>">Reclamos</a>
             <div class="user-chip">
                 <div class="user-avatar"><?= esc(strtoupper(substr(session()->get('nombre'), 0, 1))) ?></div>
                 <div>

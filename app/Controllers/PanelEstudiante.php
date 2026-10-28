@@ -12,8 +12,6 @@ class PanelEstudiante extends BaseController
     public function index()
     {
         $solicitudModel = new \App\Models\SolicitudModel();
-        $solicitudModel->actualizarEstadosVencidos(); //actualizamos los estados de las solicitudes que hayan vencido, para que se refleje en la vista del panel del estudiante.
-
         //filtramos las solicitudes del usuario logueado y las ordenamos por fecha de creación descendente, trayendo todas las solicitudes encontradas.
         $solicitudes = $solicitudModel->where('usuario_id', session()->get('usuario_id'))->orderBy('fecha_creacion', 'DESC')->findAll();
         //recorremos las solicitudes encontradas y calculamos el progreso de cada una según su estado, para poder mostrarlo en la vista.

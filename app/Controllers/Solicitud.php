@@ -29,13 +29,22 @@ class Solicitud extends BaseController
         $reglas = [
             // required: no puede venir vacío
             // in_list[...]: el valor tiene que ser EXACTAMENTE uno de estos.
-            'tipo' => 'required|in_list[inscripcion,renovacion]',
+            'tipo' => [
+                'label' => 'Tipo de trámite',
+                'rules' => 'required|in_list[inscripcion,renovacion]',
+            ],
 
             //uploaded[dni,certificado]: confirma que se subió un archivo en el campo "dni"
             //max_size[dni,2048]: tamaño máximo en KB (2048 KB = 2 MB)
             //ext_in[dni,...]: solo permite estas extensiones de archivo
-            'dni'  => 'uploaded[dni]|max_size[dni,2048]|ext_in[dni,pdf,jpg,jpeg,png]|mime_in[dni,application/pdf,image/jpeg,image/png]' ,
-            'certificado' => 'uploaded[certificado]|max_size[certificado,2048]|ext_in[certificado,pdf,jpg,jpeg,png]|mime_in[certificado,application/pdf,image/jpeg,image/png]',
+            'dni' => [
+                'label' => 'DNI',
+                'rules' => 'uploaded[dni]|max_size[dni,2048]|ext_in[dni,pdf,jpg,jpeg,png]|mime_in[dni,application/pdf,image/jpeg,image/png]',
+            ],
+            'certificado' => [
+                'label' => 'Certificado de alumno regular',
+                'rules' => 'uploaded[certificado]|max_size[certificado,2048]|ext_in[certificado,pdf,jpg,jpeg,png]|mime_in[certificado,application/pdf,image/jpeg,image/png]',
+            ],
         ];
 
         //$this->validate() corre las reglas de arriba contra lo que llegó en el request.

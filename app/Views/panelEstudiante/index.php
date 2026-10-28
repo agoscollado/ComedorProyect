@@ -142,7 +142,7 @@
                 <div class="action-card">
                     <div class="num">03 — Reclamos</div>
                     <h3>Reportar un problema</h3>
-                    <p>Contanos qué pasó con tu inscripción, tu chequera o la atención.</p>
+                    <p>Cargá un reclamo vinculado al servicio y consultá la respuesta del comedor.</p>
                     <a class="card-link" href="<?= base_url('reclamos/nuevo') ?>">Reportar reclamo →</a>
                 </div>
             </div>

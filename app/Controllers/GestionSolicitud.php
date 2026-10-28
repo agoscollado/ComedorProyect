@@ -10,21 +10,22 @@ class GestionSolicitud extends BaseController
     public function listarPendientes()
     { //lista todas las solicitudes que están en estado "recibida" o "en revision"
         $solicitudModel = new \App\Models\SolicitudModel();
-        $usuarioModel = new \App\Models\UsuarioModel();
-        $solicitudModel->actualizarEstadosVencidos(); //actualizamos los estados de las solicitudes que hayan vencido, para que se refleje en la vista del panel del estudiante.
-
         $solicitudesPendientes = $solicitudModel
+            ->select('solicitudes.*, usuarios.nombre AS estudiante_nombre')
+            ->join('usuarios', 'usuarios.id = solicitudes.usuario_id')
             ->whereIn('estado', ['recibida', 'en revision'])
             ->orderBy('fecha_creacion', 'ASC')
-            ->findAll();
+            ->paginate(25, 'solicitudes');
 
         foreach ($solicitudesPendientes as &$solicitud) {
-            $estudiante = $usuarioModel->find($solicitud['usuario_id']);
-            $solicitud['estudiante_nombre'] = $estudiante['nombre'] ?? 'Estudiante no encontrado';
             $solicitud['badge'] = $solicitudModel->estadoBadge($solicitud['estado']);
         }
+        unset($solicitud);
 
-        return view('gestionSolicitudes/indexListarPendientes', ['solicitudes' => $solicitudesPendientes]);
+        return view('gestionSolicitudes/indexListarPendientes', [
+            'solicitudes' => $solicitudesPendientes,
+            'pager' => $solicitudModel->pager,
+        ]);
     }
 
     public function verDetalle($id) {

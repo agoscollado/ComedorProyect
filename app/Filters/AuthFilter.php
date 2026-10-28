@@ -25,27 +25,39 @@ class AuthFilter implements FilterInterface
             return redirect()->to('/login');
         }
 
-        if ($arguments && $arguments[0] === 'estudiante') {
-            try {
-                $usuario = (new UsuarioModel())->find(session()->get('usuario_id'));
-            } catch (\Throwable $exception) {
-                log_message('error', 'No se pudo verificar el estado del usuario {id}: {error}', [
-                    'id' => session()->get('usuario_id'),
-                    'error' => $exception->getMessage(),
-                ]);
-                session()->remove(['usuario_id', 'nombre', 'rol']);
-                session()->destroy();
+        try {
+            $usuario = (new UsuarioModel())->find(session()->get('usuario_id'));
+        } catch (\Throwable $exception) {
+            log_message('error', 'No se pudo verificar el usuario {id}: {error}', [
+                'id' => session()->get('usuario_id'),
+                'error' => $exception->getMessage(),
+            ]);
+            $this->limpiarSesion();
 
-                return redirect()->to('/login')->with('error', 'No se pudo verificar tu cuenta. Intentá iniciar sesión de nuevo.');
-            }
-
-            if ($usuario === null) {
-                session()->remove(['usuario_id', 'nombre', 'rol']);
-                session()->destroy();
-
-                return redirect()->to('/login')->with('error', 'No se encontró tu cuenta. Intentá iniciar sesión de nuevo.');
-            }
+            return redirect()->to('/login')->with('error', 'No se pudo verificar tu cuenta. Intentá iniciar sesión de nuevo.');
         }
+
+        if ($usuario === null) {
+            $this->limpiarSesion();
+
+            return redirect()->to('/login')->with('error', 'No se encontró tu cuenta. Intentá iniciar sesión de nuevo.');
+        }
+
+        if ($usuario['rol'] !== session()->get('rol')) {
+            $this->limpiarSesion();
+
+            return redirect()->to('/login')->with('error', 'Tu sesión ya no es válida. Iniciá sesión de nuevo.');
+        }
+
+        if ($arguments && $usuario['rol'] !== $arguments[0]) {
+            return redirect()->to('/login');
+        }
+    }
+
+    private function limpiarSesion(): void
+    {
+        session()->remove(['usuario_id', 'nombre', 'rol']);
+        session()->destroy();
     }
 
     /**

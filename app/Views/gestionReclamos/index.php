@@ -1,6 +1,7 @@
 <?php
 /** @var array $reclamos */
 /** @var string $estadoActual */
+/** @var \CodeIgniter\Pager\Pager $pager */
 $esPendiente = $estadoActual === 'pendiente';
 ?>
 <!DOCTYPE html>
@@ -42,6 +43,7 @@ $esPendiente = $estadoActual === 'pendiente';
                     <p><?= $esPendiente ? 'No hay reclamos pendientes.' : 'Todavía no respondiste ningún reclamo.' ?></p>
                 </div>
             <?php else: ?>
+                <div class="table-responsive">
                 <table class="history-table">
                     <thead>
                         <tr>
@@ -50,7 +52,7 @@ $esPendiente = $estadoActual === 'pendiente';
                             <th>Categoría</th>
                             <th>Fecha</th>
                             <th>Estado</th>
-                            <th></th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,6 +68,8 @@ $esPendiente = $estadoActual === 'pendiente';
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </div>
+                <?= $pager->links('reclamos') ?>
             <?php endif; ?>
         </section>
     </main>

@@ -21,7 +21,7 @@ class GestionReclamo extends BaseController
             ->join('usuarios', 'usuarios.id = reclamos.usuario_id')
             ->where('reclamos.estado', $estado)
             ->orderBy('reclamos.fecha_creacion', $estado === 'pendiente' ? 'ASC' : 'DESC')
-            ->findAll();
+            ->paginate(25, 'reclamos');
 
         foreach ($reclamos as &$reclamo) {
             $reclamo['badge'] = $reclamoModel->estadoBadge($reclamo['estado']);
@@ -32,6 +32,7 @@ class GestionReclamo extends BaseController
         return view('gestionReclamos/index', [
             'reclamos' => $reclamos,
             'estadoActual' => $estado,
+            'pager' => $reclamoModel->pager,
         ]);
     }
 

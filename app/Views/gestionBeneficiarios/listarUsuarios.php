@@ -1,5 +1,6 @@
 <?php
 /** @var array $usuarios */
+/** @var \CodeIgniter\Pager\Pager $pager */
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -35,6 +36,12 @@
                 <div class="history-head">
                     <h2>Historial de beneficiarios</h2>
                 </div>
+                <?php if (empty($usuarios)): ?>
+                    <div class="tracker-card">
+                        <p>No hay beneficiarios activos.</p>
+                    </div>
+                <?php else: ?>
+                <div class="table-responsive">
                 <table class="history-table">
                     <thead>
                         <tr>
@@ -70,6 +77,9 @@
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            </div>
+            <?= $pager->links('beneficiarios') ?>
+            <?php endif; ?>
             </section>
         </main>
 
