@@ -78,7 +78,7 @@
                 </tbody>
             </table>
             </div>
-            <?= $pager->links('beneficiarios') ?>
+            <?= $pager->links('beneficiarios', 'comedorlistas') ?>
             <?php endif; ?>
             </section>
         </main>

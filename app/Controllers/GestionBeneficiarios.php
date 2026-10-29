@@ -14,7 +14,7 @@ class GestionBeneficiarios extends BaseController
             ->where('activo', 1)
             ->where('rol', 'estudiante')
             ->orderBy('nombre', 'ASC')
-            ->paginate(25, 'beneficiarios');
+            ->paginate(20, 'beneficiarios');
 
         return view('gestionBeneficiarios/listarUsuarios', [
             'usuarios' => $usuarios,

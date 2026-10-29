@@ -43,4 +43,13 @@ class AcreditacionModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    //devuelve un arreglo con la cantidad de acreditaciones y el monto total acreditado en el período especificado
+    public function resumenEnPeriodo(string $desde, string $hasta): array
+    {
+        return $this->select('COUNT(*) AS cantidad, COALESCE(SUM(monto), 0) AS total')
+            ->where('fecha_acreditacion >=', $desde . ' 00:00:00')
+            ->where('fecha_acreditacion <=', $hasta . ' 23:59:59')
+            ->first();
+    }
 }

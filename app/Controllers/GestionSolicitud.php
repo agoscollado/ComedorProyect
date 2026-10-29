@@ -15,7 +15,7 @@ class GestionSolicitud extends BaseController
             ->join('usuarios', 'usuarios.id = solicitudes.usuario_id')
             ->whereIn('estado', ['recibida', 'en revision'])
             ->orderBy('fecha_creacion', 'ASC')
-            ->paginate(25, 'solicitudes');
+            ->paginate(20, 'solicitudes');
 
         foreach ($solicitudesPendientes as &$solicitud) {
             $solicitud['badge'] = $solicitudModel->estadoBadge($solicitud['estado']);

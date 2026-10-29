@@ -61,4 +61,22 @@ class ReclamoModel extends Model
             default      => ['clase' => 'badge-recibida', 'texto' => ucfirst($estado)],
         };
     }
+
+    public function contarPorCategoria(string $desde, string $hasta): array
+    { //devuelve un arreglo con la cantidad de reclamos por categoría en el período especificado
+        return $this->select('categoria, COUNT(*) AS total')
+            ->where('fecha_creacion >=', $desde . ' 00:00:00')
+            ->where('fecha_creacion <=', $hasta . ' 23:59:59')
+            ->groupBy('categoria')
+            ->findAll();
+    }
+
+    public function contarPorEstado(string $desde, string $hasta): array
+    { //devuelve un arreglo con la cantidad de reclamos por estado en el período especificado
+        return $this->select('estado, COUNT(*) AS total')
+            ->where('fecha_creacion >=', $desde . ' 00:00:00')
+            ->where('fecha_creacion <=', $hasta . ' 23:59:59')
+            ->groupBy('estado')
+            ->findAll();
+    }
 }

@@ -64,12 +64,30 @@ class SolicitudModel extends Model
     }
 
     public function actualizarEstadosVencidos(): void
-    {
+    { //actualiza el estado de las solicitudes que llevan más de un día en estado "recibida" a "en revision"
         $limite = date('Y-m-d H:i:s', strtotime('-1 day'));
 
         $this->builder()
             ->where('estado', 'recibida')
             ->where('fecha_creacion <=', $limite)
             ->update(['estado' => 'en revision']);
+    }
+
+    public function contarPorTipo(string $desde, string $hasta): array
+    {//devuelve un arreglo con la cantidad de solicitudes por tipo en el período especificado
+        return $this->select('tipo, COUNT(*) AS total')
+            ->where('fecha_creacion >=', $desde . ' 00:00:00')
+            ->where('fecha_creacion <=', $hasta . ' 23:59:59')
+            ->groupBy('tipo')
+            ->findAll();
+    }
+
+    public function contarPorEstado(string $desde, string $hasta): array
+    {//devuelve un arreglo con la cantidad de solicitudes por estado en el período especificado
+        return $this->select('estado, COUNT(*) AS total')
+            ->where('fecha_creacion >=', $desde . ' 00:00:00')
+            ->where('fecha_creacion <=', $hasta . ' 23:59:59')
+            ->groupBy('estado')
+            ->findAll();
     }
 }

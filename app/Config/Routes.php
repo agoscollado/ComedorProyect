@@ -26,6 +26,9 @@ $routes->group('gestionSolicitudes', ['filter' => 'auth:responsable'], function(
     $routes->post('aprobar/(:num)', 'GestionSolicitud::aprobar/$1');
     $routes->post('rechazar/(:num)', 'GestionSolicitud::rechazar/$1');
 });
+//Reportes (Responsable)
+$routes->get('/reportes/exportar', 'Reportes::exportarCsv', ['filter' => 'auth:responsable']);
+$routes->get('/reportes', 'Reportes::index', ['filter' => 'auth:responsable']);
 //Gestión de Beneficiarios (Responsable)
 $routes->group('gestionBeneficiarios', ['filter' => 'auth:responsable'], function($routes) {
     $routes->get('listarUsuarios', 'GestionBeneficiarios::listarUsuarios');

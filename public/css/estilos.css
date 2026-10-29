@@ -324,10 +324,12 @@ header {
     justify-content: space-between;
     height: 76px;
 }
+header .header-inner { max-width: 1360px; }
 .brand {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
 }
 .brand-mark {
     width: 38px;
@@ -366,6 +368,19 @@ header {
 nav {
     display: flex;
     align-items: center;
+    gap: 26px;
+    flex-shrink: 0;
+}
+header nav {
+    flex: 1;
+    justify-content: space-between;
+    margin-left: 32px;
+}
+.nav-links {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
     gap: 26px;
 }
 nav a.nav-link {
@@ -602,29 +617,54 @@ table.history-table {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 14px;
-    margin-top: 16px;
+    gap: 6px;
+    margin: 20px auto 0;
+    width: fit-content;
+    max-width: 100%;
 }
 .paginacion-num {
-    background: none;
-    border: 0;
+    display: inline-flex;
+    min-width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--color-linea);
     color: var(--color-texto-tenue);
-    font-weight: 500;
+    font-weight: 700;
     text-decoration: none;
 }
-.paginacion-num:hover { color: var(--color-acento); }
-.paginacion-num.activa {
-    border-bottom: 2px solid var(--color-primario);
+.paginacion-num:hover {
+    border-color: var(--color-primario);
     color: var(--color-primario);
+}
+.paginacion-num.activa {
+    border-color: var(--color-primario);
+    background: var(--color-primario);
+    color: var(--color-papel);
     font-weight: 700;
 }
 .paginacion-flecha {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--color-linea);
     color: var(--color-primario);
-    font-size: 1.5rem;
-    line-height: 1;
+    font-size: 1.4rem;
     text-decoration: none;
 }
-.paginacion-flecha-off { color: var(--color-linea); }
+.paginacion-flecha:hover { background: var(--color-primario); color: var(--color-papel); }
+.paginacion-flecha-off { color: var(--color-texto-tenue); opacity: 0.45; }
+.paginacion-ellipsis {
+    min-width: 28px;
+    color: var(--color-texto-tenue);
+    text-align: center;
+}
 .badge {
     display: inline-block;
     padding: 4px 10px;
@@ -795,6 +835,132 @@ table.history-table {
     color: var(--color-texto-tenue);
     font-style: italic;
 }
+
+/* Reportes */
+.reportes-filtro {
+    background: var(--color-papel);
+    border: 1px solid var(--color-linea);
+    border-radius: 12px;
+    padding: 20px 24px;
+}
+
+.reportes-filtro .history-head { margin-bottom: 16px; }
+
+.reportes-filtro-form {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.reportes-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.reportes-campo label {
+    color: var(--color-primario);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.reportes-campo input {
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid var(--color-linea);
+    border-radius: 6px;
+    background: var(--color-papel);
+    color: var(--color-neutro-oscuro);
+    font: inherit;
+}
+
+.reportes-campo input:focus {
+    outline: 2px solid rgba(39, 137, 195, 0.25);
+    border-color: var(--color-acento);
+}
+
+.reportes-submit {
+    min-height: 42px;
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--color-primario);
+    color: var(--color-papel);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.reportes-submit:hover { background: var(--color-secundario); }
+
+.reportes-export {
+    border: 1px solid var(--color-primario);
+    background: transparent;
+    color: var(--color-primario);
+}
+
+.reportes-export:hover {
+    background: var(--color-primario);
+    color: var(--color-papel);
+}
+
+.reportes-seccion { margin-top: 30px; }
+
+.reportes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.reportes-card h3 {
+    margin-bottom: 14px;
+    color: var(--color-primario);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+}
+
+.reportes-lista { display: grid; }
+
+.reportes-fila {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 0;
+    border-top: 1px solid var(--color-linea);
+    font-size: 13.5px;
+}
+
+.reportes-fila dt { color: var(--color-texto-tenue); }
+.reportes-fila dd { color: var(--color-primario); font-weight: 700; }
+
+.reportes-metrica .label {
+    margin-bottom: 8px;
+    color: var(--color-texto-tenue);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.reportes-metrica p {
+    color: var(--color-primario);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+@media (max-width: 640px) {
+    .reportes-grid { grid-template-columns: 1fr; }
+    .reportes-filtro { padding: 18px; }
+    .reportes-filtro-form { align-items: stretch; flex-direction: column; }
+    .reportes-campo input, .reportes-submit { width: 100%; }
+}
+
 /* ----------------------------- ---------------------------------------------
     Footer
    ------------------------------------------------------------------------- */
@@ -813,4 +979,31 @@ footer .wrap {
 @media (max-width: 880px) {
     .dashboard { grid-template-columns: 1fr; }
     nav a.nav-link { display: none; }
+}
+
+@media (min-width: 881px) and (max-width: 1200px) {
+    header .header-inner {
+        height: auto;
+        min-height: 76px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 24px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    header nav {
+        flex: 0 1 auto;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px 20px;
+        margin-left: 0;
+    }
+
+    .nav-links {
+        flex: 0 1 auto;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px 20px;
+    }
 }

@@ -7,12 +7,14 @@
             </div>
         </div>
         <nav>
-            <?php if (!url_is('panel-estudiante')): ?>
-                <a class="nav-link" href="<?= base_url('panel-estudiante') ?>">Mi panel</a>
-            <?php endif; ?>
-            <a class="nav-link" href="<?= base_url('tramites') ?>">Mis trámites</a>
-            <a class="nav-link" href="<?= base_url('chequera') ?>">Chequera</a>
-            <a class="nav-link" href="<?= base_url('reclamos') ?>">Reclamos</a>
+            <div class="nav-links">
+                <?php if (!url_is('panel-estudiante')): ?>
+                    <a class="nav-link" href="<?= base_url('panel-estudiante') ?>">Mi panel</a>
+                <?php endif; ?>
+                <a class="nav-link" href="<?= base_url('tramites') ?>">Mis trámites</a>
+                <a class="nav-link" href="<?= base_url('chequera') ?>">Chequera</a>
+                <a class="nav-link" href="<?= base_url('reclamos') ?>">Reclamos</a>
+            </div>
             <div class="user-chip">
                 <div class="user-avatar"><?= esc(strtoupper(substr(session()->get('nombre'), 0, 1))) ?></div>
                 <div>

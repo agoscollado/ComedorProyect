@@ -43,4 +43,12 @@ class UsuarioModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function contarEstudiantesPorEstado(): array
+    { //devuelve un arreglo con la cantidad de estudiantes activos e inactivos
+        return $this->select('activo, COUNT(*) AS total')
+            ->where('rol', 'estudiante')
+            ->groupBy('activo')
+            ->findAll();
+    }
 }

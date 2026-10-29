@@ -69,7 +69,7 @@ $esPendiente = $estadoActual === 'pendiente';
                     </tbody>
                 </table>
                 </div>
-                <?= $pager->links('reclamos') ?>
+                <?= $pager->links('reclamos', 'comedorlistas') ?>
             <?php endif; ?>
         </section>
     </main>
