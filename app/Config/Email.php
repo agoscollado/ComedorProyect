@@ -7,7 +7,7 @@ use CodeIgniter\Config\BaseConfig;
 class Email extends BaseConfig
 {
     public string $fromEmail  = '';
-    public string $fromName   = '';
+    public string $fromName   = 'Comedor Universitario';
     public string $recipients = '';
 
     /**
@@ -18,7 +18,7 @@ class Email extends BaseConfig
     /**
      * The mail sending protocol: mail, sendmail, smtp
      */
-    public string $protocol = 'mail';
+    public string $protocol = 'smtp';
 
     /**
      * The server path to Sendmail.
@@ -48,7 +48,7 @@ class Email extends BaseConfig
     /**
      * SMTP Port
      */
-    public int $SMTPPort = 25;
+    public int $SMTPPort = 587;
 
     /**
      * SMTP Timeout (in seconds)
@@ -123,4 +123,19 @@ class Email extends BaseConfig
      * Enable notify message from server
      */
     public bool $DSN = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->fromEmail = (string) env('email.fromEmail', '');
+        $this->fromName = (string) env('email.fromName', 'Comedor Universitario');
+        $this->protocol = (string) env('email.protocol', 'smtp');
+        $this->SMTPHost = (string) env('email.SMTPHost', '');
+        $this->SMTPUser = (string) env('email.SMTPUser', '');
+        $this->SMTPPass = (string) env('email.SMTPPass', '');
+        $this->SMTPPort = (int) env('email.SMTPPort', 587);
+        $this->SMTPTimeout = (int) env('email.SMTPTimeout', 10);
+        $this->SMTPCrypto = (string) env('email.SMTPCrypto', 'tls');
+    }
 }

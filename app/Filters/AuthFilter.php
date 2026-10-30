@@ -49,6 +49,20 @@ class AuthFilter implements FilterInterface
             return redirect()->to('/login')->with('error', 'Tu sesión ya no es válida. Iniciá sesión de nuevo.');
         }
 
+        if (empty($usuario['email_verified_at'])) {
+            $this->limpiarSesion();
+
+            return redirect()->to('/login')
+                ->with('error', 'Verificá tu correo electrónico antes de continuar.');
+        }
+
+        if ((int) $usuario['auth_version'] !== (int) session()->get('auth_version')) {
+            $this->limpiarSesion();
+
+            return redirect()->to('/login')
+                ->with('error', 'Tu sesión ya no es válida. Iniciá sesión de nuevo.');
+        }
+
         if ($arguments && $usuario['rol'] !== $arguments[0]) {
             return redirect()->to('/login');
         }
@@ -56,7 +70,7 @@ class AuthFilter implements FilterInterface
 
     private function limpiarSesion(): void
     {
-        session()->remove(['usuario_id', 'nombre', 'rol']);
+        session()->remove(['usuario_id', 'nombre', 'rol', 'auth_version']);
         session()->destroy();
     }
 

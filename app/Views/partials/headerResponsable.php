@@ -1,7 +1,7 @@
 <header>
     <div class="wrap header-inner">
         <div class="brand">
-            <div class="brand-mark"></div>
+            <img class="brand-logo" src="<?= base_url('images/comedor-logo.png') ?>" alt="">
             <div class="brand-text">Comedor Universitario
                 <span>Gestión de trámites en línea</span>
             </div>

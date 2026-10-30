@@ -3,15 +3,17 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\HistorialBeneficioModel;
+use App\Models\UsuarioModel;
+use DomainException;
+use Throwable;
 
 class GestionBeneficiarios extends BaseController
 {
     public function listarUsuarios()
     {
-        $usuarioModel = new \App\Models\UsuarioModel();
+        $usuarioModel = new UsuarioModel();
         $usuarios = $usuarioModel
-            ->where('activo', 1)
             ->where('rol', 'estudiante')
             ->orderBy('nombre', 'ASC')
             ->paginate(20, 'beneficiarios');
@@ -19,41 +21,64 @@ class GestionBeneficiarios extends BaseController
         return view('gestionBeneficiarios/listarUsuarios', [
             'usuarios' => $usuarios,
             'pager' => $usuarioModel->pager,
+            'historial' => (new HistorialBeneficioModel())->ultimosCambios(),
         ]);
     }
 
     public function darDeBaja($id)
-    { //cambia el estado del usuario a inactivo, acceso restringido a Responsables vía filtro de ruta
-        $usuarioModel = new \App\Models\UsuarioModel();
-        $usuario = $usuarioModel->find($id);
+    {
+        return $this->cambiarBeneficio((int) $id, 0);
+    }
 
-        if (!$usuario) {
-            return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('error', 'Usuario no encontrado.');
+    public function activarBeneficio($id)
+    {
+        return $this->cambiarBeneficio((int) $id, 1);
+    }
+
+    private function cambiarBeneficio(int $estudianteId, int $activoNuevo)
+    {
+        $motivo = $this->request->getPost('motivo');
+        if (! is_string($motivo)) {
+            return redirect()->back()->with('error', 'Indicá el motivo del cambio de beneficio.');
         }
 
-        if ($usuario['rol'] !== 'estudiante') {
-            return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('error', 'Solo se puede dar de baja a estudiantes.');
+        $motivo = trim($motivo);
+        if (mb_strlen($motivo, 'UTF-8') < 5 || mb_strlen($motivo, 'UTF-8') > 500) {
+            return redirect()->back()->with(
+                'error',
+                'El motivo debe tener entre 5 y 500 caracteres.'
+            )->withInput();
         }
 
         try {
-            $actualizado = $usuarioModel->update($id, ['activo' => 0]);
-        } catch (\Throwable $exception) {
-            log_message('error', 'No se pudo dar de baja al estudiante ID {id}: {error}', [
-                'id' => $id,
+            $cambioRegistrado = (new HistorialBeneficioModel())->registrarCambio(
+                $estudianteId,
+                (int) session()->get('usuario_id'),
+                $activoNuevo,
+                $motivo
+            );
+        } catch (DomainException $exception) {
+            return redirect()->to('/gestionBeneficiarios/listarUsuarios')
+                ->with('error', $exception->getMessage());
+        } catch (Throwable $exception) {
+            log_message('error', 'No se pudo cambiar el beneficio del estudiante {id}: {error}', [
+                'id' => $estudianteId,
                 'error' => $exception->getMessage(),
             ]);
 
             return redirect()->to('/gestionBeneficiarios/listarUsuarios')
-                ->with('error', 'No se pudo dar de baja al estudiante. Intentá de nuevo.');
+                ->with('error', 'No se pudo actualizar el beneficio. Intentá de nuevo.');
         }
 
-        if (!$actualizado) {
-            log_message('error', 'No se pudo dar de baja al estudiante ID {id}.', ['id' => $id]);
-
+        if (! $cambioRegistrado) {
             return redirect()->to('/gestionBeneficiarios/listarUsuarios')
-                ->with('error', 'No se pudo dar de baja al estudiante. Intentá de nuevo.');
+                ->with('error', 'El beneficio ya tenía ese estado; no se registró un cambio.');
         }
 
-        return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('exito', 'Usuario dado de baja correctamente.');
+        $mensaje = $activoNuevo === 1
+            ? 'Beneficio activado y cambio registrado.'
+            : 'Beneficio dado de baja y cambio registrado.';
+
+        return redirect()->to('/gestionBeneficiarios/listarUsuarios')->with('exito', $mensaje);
     }
 }

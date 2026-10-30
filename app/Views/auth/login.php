@@ -10,18 +10,19 @@
     <header>
         <div class="wrap header-inner">
             <div class="brand">
-                <div class="brand-mark"></div>
+                <img class="brand-logo" src="<?= base_url('images/comedor-logo.png') ?>" alt="">
                 <div class="brand-text">Comedor Universitario
                     <span>Gestión de trámites en línea</span>
                 </div>
             </div>
         </div>
     </header>
-    <!--- Mostrar mensaje de error si existe -->
-    <?php $error = session()->getFlashdata('error'); ?>
-        <?php if ($error): ?>
-            <p><?= esc($error) ?></p>
-        <?php endif; ?>
+    <?php if ($exito = session()->getFlashdata('exito')): ?>
+        <div class="auth-feedback mensaje-exito" role="status"><?= esc($exito) ?></div>
+    <?php endif; ?>
+    <?php if ($error = session()->getFlashdata('error')): ?>
+        <div class="auth-feedback mensaje-error" role="alert"><?= esc($error) ?></div>
+    <?php endif; ?>
 
     <main class="auth-main">
     <form class="tabs" action="<?= base_url('login') ?>" method="post">
@@ -39,14 +40,15 @@
                     <input type="password" id="password" name="password" required>
                     
                     <button type="submit">Iniciar Sesión</button>
-                
+                    <a class="auth-link" href="<?= base_url('password/recuperar') ?>">¿Olvidaste tu contraseña?</a>
+                    <a class="auth-link auth-link-registro" href="<?= base_url('registro') ?>">¿No tenés cuenta? Registrate</a>
             </div>
     </form>
     </main>
     
     <footer>
             <div class="wrap footer-inner">
-                Comedor Universitario · Secretaría de Bienestar Estudiantil
+                Comedor Universitario · Secretaría de Bienestar Estudiantil - 2026 ®
             </div>
         </footer>
 </body>

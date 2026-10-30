@@ -10,6 +10,16 @@ $routes->get('/', function () {
 //Autenticacion
 $routes->get('/login', 'Auth::mostrarFormLogin');
 $routes->post('/login', 'Auth::procesarLogin');
+$routes->get('/registro', 'Auth::mostrarFormRegistro');
+$routes->post('/registro', 'Auth::registrarEstudiante');
+$routes->get('/verificar-email/(:segment)', 'Auth::mostrarFormVerificacion/$1');
+$routes->post('/verificar-email', 'Auth::confirmarEmail');
+$routes->get('/verificacion/reenviar', 'Auth::mostrarFormReenvioVerificacion');
+$routes->post('/verificacion/reenviar', 'Auth::reenviarVerificacion');
+$routes->get('/password/recuperar', 'Auth::mostrarFormRecuperacion');
+$routes->post('/password/recuperar', 'Auth::solicitarRecuperacion');
+$routes->get('/password/restablecer/(:segment)', 'Auth::mostrarFormRestablecimiento/$1');
+$routes->post('/password/restablecer', 'Auth::restablecerPassword');
 $routes->post('/logout', 'Auth::logout');
 //Panel Estudiante
 $routes->get('/panel-estudiante', 'PanelEstudiante::index', ['filter' => 'auth:estudiante']);
@@ -32,6 +42,7 @@ $routes->get('/reportes', 'Reportes::index', ['filter' => 'auth:responsable']);
 //Gestión de Beneficiarios (Responsable)
 $routes->group('gestionBeneficiarios', ['filter' => 'auth:responsable'], function($routes) {
     $routes->get('listarUsuarios', 'GestionBeneficiarios::listarUsuarios');
+    $routes->post('activar/(:num)', 'GestionBeneficiarios::activarBeneficio/$1');
     $routes->post('darDeBaja/(:num)', 'GestionBeneficiarios::darDeBaja/$1');
 });
 //Gestión de Chequeras (Responsable)

@@ -162,7 +162,7 @@ $totalAcreditado = (float) ($resumenAcreditaciones['total'] ?? 0);
 
     <footer>
         <div class="wrap footer-inner">
-            Comedor Universitario · Secretaría de Bienestar Estudiantil
+            Comedor Universitario · Secretaría de Bienestar Estudiantil - 2026 ®
         </div>
     </footer>
 </body>

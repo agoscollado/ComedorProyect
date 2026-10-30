@@ -31,6 +31,14 @@ final class AuthFilterTest extends CIUnitTestCase
                 'constraint' => 20,
                 'null' => true,
             ],
+            'email_verified_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
+            'auth_version' => [
+                'type' => 'INT',
+                'default' => 0,
+            ],
         ]);
         $forge->addPrimaryKey('id');
         $forge->createTable('usuarios');
@@ -47,8 +55,8 @@ final class AuthFilterTest extends CIUnitTestCase
 
     public function testActiveStudentCanUseStudentRoutes(): void
     {
-        $usuarioId = (new UsuarioModel())->insert(['activo' => 1, 'rol' => 'estudiante']);
-        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante']);
+        $usuarioId = $this->crearUsuario('estudiante', 1);
+        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante', 'auth_version' => 0]);
 
         $resultado = (new AuthFilter())->before(service('request'), ['estudiante']);
 
@@ -57,8 +65,8 @@ final class AuthFilterTest extends CIUnitTestCase
 
     public function testInactiveStudentCanUseStudentRoutes(): void
     {
-        $usuarioId = (new UsuarioModel())->insert(['activo' => 0, 'rol' => 'estudiante']);
-        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante']);
+        $usuarioId = $this->crearUsuario('estudiante', 0);
+        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante', 'auth_version' => 0]);
 
         $resultado = (new AuthFilter())->before(service('request'), ['estudiante']);
 
@@ -78,8 +86,8 @@ final class AuthFilterTest extends CIUnitTestCase
 
     public function testActiveResponsibleCanUseResponsibleRoutes(): void
     {
-        $usuarioId = (new UsuarioModel())->insert(['activo' => 1, 'rol' => 'responsable']);
-        session()->set(['usuario_id' => $usuarioId, 'rol' => 'responsable']);
+        $usuarioId = $this->crearUsuario('responsable', 1);
+        session()->set(['usuario_id' => $usuarioId, 'rol' => 'responsable', 'auth_version' => 0]);
 
         $resultado = (new AuthFilter())->before(service('request'), ['responsable']);
 
@@ -89,8 +97,8 @@ final class AuthFilterTest extends CIUnitTestCase
     public function testSessionIsClearedWhenAccountRoleChanges(): void
     {
         $usuarioModel = new UsuarioModel();
-        $usuarioId = $usuarioModel->insert(['activo' => 1, 'rol' => 'estudiante']);
-        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante']);
+        $usuarioId = $this->crearUsuario('estudiante', 1);
+        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante', 'auth_version' => 0]);
         $usuarioModel->update($usuarioId, ['rol' => 'responsable']);
 
         $resultado = (new AuthFilter())->before(service('request'), ['estudiante']);
@@ -101,12 +109,49 @@ final class AuthFilterTest extends CIUnitTestCase
 
     public function testResponsibleCannotUseStudentRoutes(): void
     {
-        $usuarioId = (new UsuarioModel())->insert(['activo' => 1, 'rol' => 'responsable']);
-        session()->set(['usuario_id' => $usuarioId, 'rol' => 'responsable']);
+        $usuarioId = $this->crearUsuario('responsable', 1);
+        session()->set(['usuario_id' => $usuarioId, 'rol' => 'responsable', 'auth_version' => 0]);
 
         $resultado = (new AuthFilter())->before(service('request'), ['estudiante']);
 
         $this->assertInstanceOf(RedirectResponse::class, $resultado);
         $this->assertSame($usuarioId, session()->get('usuario_id'));
+    }
+
+    public function testUnverifiedAccountCannotUseProtectedRoutes(): void
+    {
+        $usuarioId = (new UsuarioModel())->insert([
+            'activo' => 0,
+            'rol' => 'estudiante',
+            'auth_version' => 0,
+        ]);
+        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante', 'auth_version' => 0]);
+
+        $resultado = (new AuthFilter())->before(service('request'), ['estudiante']);
+
+        $this->assertInstanceOf(RedirectResponse::class, $resultado);
+        $this->assertNull(session()->get('usuario_id'));
+    }
+
+    public function testPasswordResetVersionInvalidatesExistingSession(): void
+    {
+        $usuarioId = $this->crearUsuario('estudiante', 0);
+        session()->set(['usuario_id' => $usuarioId, 'rol' => 'estudiante', 'auth_version' => 0]);
+        (new UsuarioModel())->update($usuarioId, ['auth_version' => 1]);
+
+        $resultado = (new AuthFilter())->before(service('request'), ['estudiante']);
+
+        $this->assertInstanceOf(RedirectResponse::class, $resultado);
+        $this->assertNull(session()->get('usuario_id'));
+    }
+
+    private function crearUsuario(string $rol, int $activo): int
+    {
+        return (new UsuarioModel())->insert([
+            'activo' => $activo,
+            'rol' => $rol,
+            'email_verified_at' => '2026-01-01 00:00:00',
+            'auth_version' => 0,
+        ]);
     }
 }

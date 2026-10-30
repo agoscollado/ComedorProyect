@@ -76,7 +76,7 @@ $esPendiente = $estadoActual === 'pendiente';
 
 <footer>
     <div class="wrap footer-inner">
-        Comedor Universitario · Secretaría de Bienestar Estudiantil
+        Comedor Universitario · Secretaría de Bienestar Estudiantil - 2026 ®
     </div>
 </footer>
 

@@ -12,7 +12,7 @@ class UsuarioModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['nombre', 'email', 'password', 'rol', 'dni', 'carrera', 'activo'];
+    protected $allowedFields    = ['nombre', 'email', 'email_verified_at', 'password', 'rol', 'dni', 'carrera', 'activo', 'auth_version'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
